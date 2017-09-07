@@ -4,3 +4,4 @@
 - 阶乘: `factorialize.js`
 - 回文算法: `palindrome.js`
 - 寻找最长的单词算法挑战: `findLongestWord.js`
+- 设置首字母大写算法挑战: `titleCas.js`
