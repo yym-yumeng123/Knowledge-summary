@@ -35,3 +35,19 @@ function palindrome(str) {
 palindrome("A man, a plan, a canal. Panama");
 console.log(palindrome("Eye  ,,   ///"))
 console.log(palindrome("eyeee"))
+
+//方法二:
+function palindrome(str) {
+  // 转换成小写用正则过滤掉符号
+  var nStr = str.toLowerCase().replace(/[^a-z0-9]/g,"");
+  console.log(nStr)
+  for(var i = 0;i<nStr.length;i++){
+    if(nStr[i] !== nStr[nStr.length -(i+1)]){
+      return false
+    }
+    
+  }
+  return true
+}
+console.log(palindrome("Eye  ,,   ///"))
+console.log(palindrome("eyee1235e"))
