@@ -19,3 +19,22 @@ function repeat(str, num) {
 console.log(repeat("abc", 4))
 console.log(repeat("*", 4))
 console.log(repeat("abc", -4))
+ 
+//方法二:
+function repeat(str, num) {
+  if(num > 0){
+    var str1 = ""
+    for(var i = 0;i< num;i++){
+      //字符串相加
+     str1 += str
+     console.log(str1)
+    }
+  }else{
+    return ""
+  }
+  
+}
+
+console.log(repeat("abc", 4))
+console.log(repeat("*", 4))
+console.log(repeat("abc", -4))
