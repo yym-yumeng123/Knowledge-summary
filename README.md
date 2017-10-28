@@ -23,3 +23,7 @@
 
 ### JS基本功夫 前端题目
 - [多维数组拍平](https://github.com/yym-yumeng123/Scripting-algorithm/issues/1)
+- [实现类似find函数 ](https://github.com/yym-yumeng123/Scripting-algorithm/issues/3)
+- [](https://github.com/yym-yumeng123/Scripting-algorithm/issues/3)
+- [](https://github.com/yym-yumeng123/Scripting-algorithm/issues/4)
+- [](https://github.com/yym-yumeng123/Scripting-algorithm/issues/5)
