@@ -23,8 +23,10 @@
 - 编写一个函数,把一个数组arr按照指定的数组大小size分割成若干个数组块。例如:chunk([1,2,3,4],2)=[[1,2],[3,4]]; chunk([1,2,3,4,5],2)=[[1,2],[3,4],[5]];
 ##### 数组截断算法挑战 `slasher.js`
 - 返回一个数组被截断n个元素后还剩余的元素，从索引0开始截断。slasher([1, 2, 3], 2) 应该返回 [3]
-
-
+##### 数组查询算法挑战 `mutation.js`
+-   如果数组第一个字符串元素包含了第二个字符串元素的所有字符，则函数返回true。
+##### 删除数组中特定值算法挑战 ` bouncer.js`
+- 删除数组中的所有的假值。在JavaScript中，假值有`alse、null、0、""、undefined 和 NaN`。
 ### JS基本功夫 前端题目
 - [多维数组拍平](https://github.com/yym-yumeng123/Scripting-algorithm/issues/1)
 - [实现类似find函数 ](https://github.com/yym-yumeng123/Scripting-algorithm/issues/3)
