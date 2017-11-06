@@ -27,6 +27,9 @@
 -   如果数组第一个字符串元素包含了第二个字符串元素的所有字符，则函数返回true。
 ##### 删除数组中特定值算法挑战 ` bouncer.js`
 - 删除数组中的所有的假值。在JavaScript中，假值有`alse、null、0、""、undefined 和 NaN`。
+##### 去除数组中任意多个值算法挑战 `destroyer.js`
+- 实现一个 destroyer 函数，第一个参数是初始数组，后跟一个或多个参数。从初始数组中删除与这些参数具有相同值的所有元素。
+ 
 ### JS基本功夫 前端题目
 - [多维数组拍平](https://github.com/yym-yumeng123/Scripting-algorithm/issues/1)
 - [实现类似find函数 ](https://github.com/yym-yumeng123/Scripting-algorithm/issues/3)
