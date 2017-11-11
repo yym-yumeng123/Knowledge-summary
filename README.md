@@ -35,6 +35,8 @@
 ### 中级脚本算法
 ##### 区间求值算法挑战 `sumAll.js`
 1. 我们会传递给你一个包含两个数字的数组。返回这两个数字和它们之间所有数字的和。最小的数字并非总在最前面。
+##### 找出数组间差异算法挑战 `diff.js`
+2. 比较两个数组，然后返回一个新数组，该数组的元素为两个给定数组中所有独有的数组元素。换言之，返回两个数组的差异。
 ### JS基础 前端题目
 - [多维数组拍平](https://github.com/yym-yumeng123/Scripting-algorithm/issues/1)
 - [实现类似find函数 ](https://github.com/yym-yumeng123/Scripting-algorithm/issues/3)
