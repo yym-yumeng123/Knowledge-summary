@@ -1,5 +1,3 @@
-
-
 # 算法
 ### 初级脚本算法
 ##### 翻转字符串:  `reverseString.js`
@@ -54,3 +52,4 @@
 
 ### API 的实现原理
 - [实现 call apply bind](https://github.com/yym-yumeng123/Scripting-algorithm/issues/6)
+- [instanceof实现原理](https://github.com/yym-yumeng123/Scripting-algorithm/issues/7)
