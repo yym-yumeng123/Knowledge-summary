@@ -1,3 +1,5 @@
+
+
 # 算法
 ### 初级脚本算法
 ##### 翻转字符串:  `reverseString.js`
@@ -49,3 +51,6 @@
 - [实现一个map()函数,模拟原生的map函数, map(list,iteratee)](https://github.com/yym-yumeng123/Scripting-algorithm/issues/3)
 - [reduce()函数](https://github.com/yym-yumeng123/Scripting-algorithm/issues/4)
 - [filter函数](https://github.com/yym-yumeng123/Scripting-algorithm/issues/5)
+
+### API 的实现原理
+- [实现 call apply bind](https://github.com/yym-yumeng123/Scripting-algorithm/issues/6)
