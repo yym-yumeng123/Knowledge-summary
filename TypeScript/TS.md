@@ -16,3 +16,6 @@ tsc xx.ts
 
 tsc xx.ts -w # 监听 ts 的变化
 ```
+
+### tsconfig 配置文件
+- `tsc --init` 创建 `tsconfig.json`
