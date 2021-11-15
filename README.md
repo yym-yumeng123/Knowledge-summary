@@ -12,3 +12,10 @@
 ### API 的实现原理
 - [实现 call apply bind](https://github.com/yym-yumeng123/Scripting-algorithm/issues/6)
 - [instanceof实现原理](https://github.com/yym-yumeng123/Scripting-algorithm/issues/7)
+
+
+---
+
+# 知识总结学习
+
+> 学习知识, 并记录各种学习的 demo
