@@ -48,3 +48,50 @@ function as17() {
   let as14 = (x: number, y: number): number => x + y
   return <const>[as13, as14]
 }
+
+
+// ! 非空断言 !
+
+{
+  let a: string = 'yym'
+  a = null! // 非严格模式可以赋值
+
+  // 现在我们有些值 可能是 null, 也可能是具体的类型
+  let ele: HTMLDivElement = document.querySelector('.div') as HTMLDivElement // Element | null
+  let ele1: HTMLDivElement = document.querySelector('.div')!
+}
+
+
+// ! DOM 类型推断 & 断言处理
+{
+  let body = document.querySelector('body') as HTMLBodyElement
+  body.remove()
+}
+
+// ! Class 构造函数需要的强制断言
+{
+  let alink = document.querySelector('#aa') as HTMLLinkElement
+  alink.href
+
+  class Ym {
+    el: HTMLDivElement
+    constructor(el: HTMLDivElement) {
+      this.el = el
+    }
+    html() {
+      return this.el.innerHTML
+    }
+  }
+
+  // const el = document.querySelector('.aa')
+  const el = document.querySelector('.aa') as HTMLDivElement
+  new Ym(el) // 可能为 null
+}
+
+// ! DOM 事件处理
+{
+  const button = document.querySelector('button') as HTMLButtonElement
+  button.addEventListener('click', (e: Event) => {
+
+  })
+}
