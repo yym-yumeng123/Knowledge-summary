@@ -19,3 +19,15 @@ tsc xx.ts -w # 监听 ts 的变化
 
 ### tsconfig 配置文件
 - `tsc --init` 创建 `tsconfig.json`
+
+### 使用
+- `枚举 enum`
+- `元组 tuple :[string, ...]`
+- `组合类型 |`
+- `非空断言 !`
+- `可选参数 ?`
+- `as 断言`
+- `any 任何类型`
+- `unknown 不知道什么类型`
+- `void` 不具体返回值, 返回 undefined
+- `never 不会执行到最后` 可以使用在 throw new Error   
