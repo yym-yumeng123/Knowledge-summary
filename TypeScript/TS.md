@@ -31,3 +31,4 @@ tsc xx.ts -w # 监听 ts 的变化
 - `unknown 不知道什么类型`
 - `void` 不具体返回值, 返回 undefined
 - `never 不会执行到最后` 可以使用在 throw new Error   
+- `泛型 <T> ` 泛型 宽泛的类型, 一般用 <T> 表示
