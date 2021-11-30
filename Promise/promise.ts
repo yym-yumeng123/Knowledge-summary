@@ -4,8 +4,7 @@
 
 class Promise2 {
   // then 后面使用
-  succeed = null
-  fail = null
+  callbakcs = []
   state = "pending"
 
   // promise 接受一个函数
@@ -20,12 +19,15 @@ class Promise2 {
   // resolve 结果 会传递给 then 的结果
   resolve(result) {
     // 只能被调用一次
+
     if (this.state !== "pending") return
     this.state = "fulfilled"
     setTimeout(() => {
-      if (typeof this.succeed === "function") {
-        this.succeed.call(undefined, result)
-      }
+      this.callbakcs.forEach((handle) => {
+        if (typeof handle[0] === "function") {
+          handle[0].call(undefined, result)
+        }
+      })
     }, 0)
   }
 
@@ -35,22 +37,28 @@ class Promise2 {
     if (this.state !== "pending") return
     this.state = "rejected"
     setTimeout(() => {
-      if (typeof this.fail === "function") {
-        this.fail.call(undefined, reason)
-      }
+      this.callbakcs.forEach((handle) => {
+        if (typeof handle[1] === "function") {
+          handle[1].call(undefined, reason)
+        }
+      })
     }, 0)
   }
 
   // Promise 实例有 then 方法
   then(succeed?, fail?) {
+    // 把 成功, 失败 推到数组里
+    const handle = []
     // 当 resolve, 或者 reject 时 调用, 如果success | fail 不是函数忽略
     if (typeof succeed === "function") {
-      this.succeed = succeed
+      handle[0] = succeed
     }
 
     if (typeof fail === "function") {
-      this.fail = fail
+      handle[1] = fail
     }
+
+    this.callbakcs.push(handle)
   }
 }
 
