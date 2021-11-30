@@ -25,7 +25,8 @@ class Promise2 {
     setTimeout(() => {
       this.callbakcs.forEach((handle) => {
         if (typeof handle[0] === "function") {
-          handle[0].call(undefined, result)
+          const x = handle[0].call(undefined, result)
+          handle[2].resolveWith(x)
         }
       })
     }, 0)
@@ -39,7 +40,8 @@ class Promise2 {
     setTimeout(() => {
       this.callbakcs.forEach((handle) => {
         if (typeof handle[1] === "function") {
-          handle[1].call(undefined, reason)
+          const x = handle[1].call(undefined, reason)
+          handle[2].resolveWith(x)
         }
       })
     }, 0)
@@ -58,7 +60,53 @@ class Promise2 {
       handle[1] = fail
     }
 
+    // 把 promise 实例 放到 handle 里
+    handle[2] = new Promise2(() => {})
     this.callbakcs.push(handle)
+
+    return handle[2]
+  }
+
+  resolveWidth(x) {
+    if (this === x) {
+      return this.reject(new TypeError("x 和 this 不能是同一个引用"))
+    }
+
+    if (x instanceof Promise2) {
+      x.then(
+        (result) => {
+          this.resolve(result)
+        },
+        (reason) => {
+          this.reject(reason)
+        }
+      )
+    }
+
+    if (x instanceof Object) {
+      let then
+      try {
+        then = x.then
+      } catch (error) {
+        this.reject(error)
+      }
+      if (then instanceof Function) {
+        try {
+          x.then(
+            (y) => {
+              this.resolveWidth(y)
+            },
+            (r) => {
+              this.reject(r)
+            }
+          )
+        } catch (error) {
+          this.reject(error)
+        }
+      } else {
+        this.resolve(x)
+      }
+    }
   }
 }
 
