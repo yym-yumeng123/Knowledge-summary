@@ -21,3 +21,47 @@
 
 - MacroTask: setTimeout
 - MicroTask: process.nextTick -> node / MutationObserver -> 浏览器 / setImmediate -> 兼容性差
+
+### Promise
+
+- 使用
+
+```js
+const p = new Promise((resolve, reject) => {
+  // TODO...
+  resolve()
+})
+
+p.then().catch()
+```
+
+- MacroTask 宏任务/ MicroTask 微任务
+  先 宏任务, 后微任务, 其实一开始没有两个任务队列, 为了让 Promise 回调更早执行,强行插入了一个队列, 如果没有 微任务, 还不如直接用 `setTimeout`
+
+- `Promise.resolve()`
+  制造一个 (成功|失败) Promise 实例, 和 resolve 结果有关
+- `Promise.reject()`
+  制造一个失败的 `Promise`
+- `Promise.all(数组)`
+  等待全部成功, 或者有一个失败
+- `Promise.allSettled(数组)`
+  返回一个数组 [{status: 'fulfilled', value: xx}]
+
+  ```js
+  // 使用 Promise.all 写 Promise.allSettled
+  // 失败会进入 reason, 成功返回, 也会成功执行
+  x= promise => promise.then((result) => {status: 'ok', value: result}, reason => {status: 'not ok', reason} )
+
+  const p1 = new Promise((resolve, reject) => reject(1))
+  const p2 = new Promise((resolve) => resolve(2))
+  const p3 = new Promise((resolve, reject) => reject(3))
+
+  x = promiseList => promiseList.map(promise => promise.then(result => ({status: 'ok', value: result}),reason =>  ({status: 'not ok', reason}) ))
+
+  Promise.all(x([p1, p2, p3])).then(res => console.log(res, 'res...'))
+  // {status: 'not ok', reason: 1}
+  // {status: 'ok', value: 2}
+  // {status: 'not ok', reason: 3}
+  ```
+
+- `Promise.race(数组)`
