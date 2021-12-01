@@ -65,3 +65,83 @@ p.then().catch()
   ```
 
 - `Promise.race(数组)`
+
+### async await
+
+- 优点: 没有缩进, 像在写同步代码
+- 只能和 promise 配合, 是 `promise` 语法糖
+- 为了兼容旧代码 `await(promise)`, 所以官方在前面强制加了一个 `async`, 没有实际意义, 和 await 配合
+```js
+const fn = async () => {
+  // await 后面等待的一个 promise
+  const temp = await makePromise()
+  return temp + 1
+}
+```
+
+- await 错误处理
+```js
+// try catch 比较丑
+let res
+try {
+  res = await axios()
+} catch(err) {
+  if(err) {
+    throw new Error()
+  }
+}
+```
+
+```js
+// 使用 catch 来捕获 错误
+
+// await 只关心成功, 失败交给 catch 捕获
+awiat axios.get().catch(error => {})
+```
+
+- await 传染性
+```js
+console.log(1)
+await console.log(2)
+console.log(3)
+
+// log(3) 变成异步任务了
+// promise 同样有传染性 (同步变异步)
+// 回调没有传染性
+```
+
+- await 应用场景
+```js
+// 多次处理一个结果
+const r1 = await makePromise()
+const r2 = await handleR1()
+const r3 = await handleR2()
+
+// 天生串行
+async function () {
+  // 依次执行
+  await ajax()
+  await ajax()
+  await ajax()
+  await ajax()
+}
+
+// 并行
+await Promise.all([p1, p2, p3]) // 就是并行
+```
+
+```js
+// 题目:
+
+let a = 0
+let test  = async () => {
+  a = a + await 10
+  console.log(a)
+}
+test()
+
+console.log(++a)
+
+// 1
+// 10
+```
