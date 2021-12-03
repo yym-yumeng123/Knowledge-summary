@@ -28,7 +28,7 @@ const a1 = JSON.parse(JSON.stringify(a))
  * 不支持 日期: 会变成一个 事件字符串
  * 不支持正则
  * 不支持 Symbol()
- * 
+ *
  * window.self === window
  */
 const b1 = JSON.parse(JSON.stringify(b))
@@ -41,23 +41,25 @@ const type = {
   n: null,
 }
 
+// 缓存
+const cache = []
 function deepClone(source) {
   if (source instanceof Object) {
-    if (source instanceof Array) {
-      const dist = new Array()
-      for (const key in source) {
-        dist[key] = deepClone(source[key])
-      }
-      return dist
-    } else if (source instanceof Function) {
-      const dist = function () {
-        return source.apply(this, arguments)
-      }
-      for (const key in source) {
-        dist[key] = deepClone(source[key])
-      }
+    let cacheDist = findCache(source)
+    if (cacheDist) {
+      return cacheDist
     } else {
-      const dist = new Object()
+      let dist
+      if (source instanceof Array) {
+        dist = new Array()
+      } else if (source instanceof Function) {
+        dist = function () {
+          return source.apply(this, arguments)
+        }
+      } else {
+        dist = new Object()
+      }
+      cache.push([source,dist])
       for (const key in source) {
         dist[key] = deepClone(source[key])
       }
@@ -66,6 +68,16 @@ function deepClone(source) {
   }
 
   return source
+}
+
+// 环检测
+function findCache(source) {
+  for (let i = 0; i < cache.length; i++) {
+    if (cache[i][1] === source) {
+      return cache[i][1]
+    }
+  }
+  return undefined
 }
 
 // 数组
