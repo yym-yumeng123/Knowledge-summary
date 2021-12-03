@@ -33,12 +33,38 @@ const a1 = JSON.parse(JSON.stringify(a))
  */
 const b1 = JSON.parse(JSON.stringify(b))
 
-const type = {
+const typeM = {
   s: "1",
   n: 1,
+  n1: NaN,
+  n2: Infinity,
   b: true,
   u: undefined,
   n: null,
+  sy: Symbol(),
+  children: {
+    s: "1",
+    n: 1,
+    n1: NaN,
+    n2: Infinity,
+    b: true,
+    u: undefined,
+    n: null,
+  },
+  array: [
+    {
+      s: "1",
+      n: 1,
+      n1: NaN,
+      n2: Infinity,
+      b: true,
+      u: undefined,
+      n: null,
+    },
+  ],
+  fn: function() {return 'fn'},
+  date: new Date(),
+  reg: /hi/gi
 }
 
 // 缓存
@@ -56,12 +82,18 @@ function deepClone(source) {
         dist = function () {
           return source.apply(this, arguments)
         }
+      } else if (source instanceof RegExp) {
+        dist = new RegExp(source.source, source.flags)
+      } else if (source instanceof Date) {
+        dist = new Date(source)
       } else {
         dist = new Object()
       }
-      cache.push([source,dist])
+      cache.push([source, dist])
       for (const key in source) {
-        dist[key] = deepClone(source[key])
+        if (source.hasOwnproperty(key)) {
+          dist[key] = deepClone(source[key])
+        }
       }
       return dist
     }
