@@ -105,3 +105,11 @@ function myInstanceof(left, right) {
   }
 }
 ```
+
+### 为什么 0.1 + 0.2 != 0.3
+
+- 因为 JS 采用 IEEE 754 双精度版本（64 位），并且只要采用 IEEE 754 的语言都有该问题
+
+```js
+parseFloat((0.1 + 0.2).toFixed(10)) === 0.3 // true
+```
