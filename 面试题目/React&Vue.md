@@ -224,3 +224,89 @@ function patchElement(parent, newVNode, oldVNode, index = 0) {
 8. 组件中 data 什么时候可以使用对象
    - 组件复用时所有组件实例都会共享 data，如果 data 是对象的话，就会造成一个组件修改 data 以后会影响到其他所有组件，所以需要将 data 写成函数，每次用到就调用一次函数获得新的数据
    - 我们使用 new Vue() 的方式的时候，无论我们将 data 设置为对象还是函数都是可以的，因为 new Vue() 的方式是生成一个根组件，该组件不会复用，也就不存在共享 data 的情况了
+
+---
+
+## 响应式原理
+
+Vue 内部使用了 `Object.defineProperty()` 来实现数据响应式，通过这个函数可以监听到 `set 和 get` 的事件
+
+```js
+var data = { name: "yck" }
+observe(data)
+let name = data.name // -> get value
+data.name = "yyy" // -> change value
+
+function observe(obj) {
+  // 判断类型
+  if (!obj || typeof obj !== "object") {
+    return
+  }
+  Object.keys(obj).forEach((key) => {
+    defineReactive(obj, key, obj[key])
+  })
+}
+
+function defineReactive(obj, key, val) {
+  // 递归子属性
+  observe(val)
+  Object.defineProperty(obj, key, {
+    // 可枚举
+    enumerable: true,
+    // 可配置
+    configurable: true,
+    // 自定义函数
+    get: function reactiveGetter() {
+      console.log("get value")
+      return val
+    },
+    set: function reactiveSetter(newVal) {
+      console.log("change value")
+      val = newVal
+    },
+  })
+}
+```
+
+**缺陷**
+
+- 通过`下标方式修改数组数据或者给对象新增属性`并不会触发组件的重新渲染，因为 `Object.defineProperty` 不能拦截到这些操作
+- 由于 js 的动态性，可以为对象追加新的属性或者删除其中某个属性，这点对经过 Object.defineProperty 方法建立的响应式对象来说，只能追踪对象已有数据是否被修改，无法追踪新增属性和删除属性
+
+## 编译过程
+
+- 模板解析为 `AST`
+  - 通过各种各样的正则表达式去匹配模板中的内容，然后将内容提取出来做各种逻辑操作，接下来会生成一个最基本的 AST 对象
+- 优化 `AST`
+- 将 `AST` 转换为 `render` 函数
+  - 遍历整个 AST，根据不同的条件生成不同的代码罢了
+
+## NextTick 原理分析
+
+`nextTick` 可以让我们在下次 DOM 更新循环结束之后执行延迟回调，用于获得更新后的 DOM
+
+实现 `macrotasks` ，会先判断是否能使用 setImmediate ，不能的话降级为 MessageChannel ，以上都不行的话就使用 setTimeout
+
+```js
+if (typeof setImmediate !== "undefined" && isNative(setImmediate)) {
+  macroTimerFunc = () => {
+    setImmediate(flushCallbacks)
+  }
+} else if (
+  typeof MessageChannel !== "undefined" &&
+  (isNative(MessageChannel) ||
+    // PhantomJS
+    MessageChannel.toString() === "[object MessageChannelConstructor]")
+) {
+  const channel = new MessageChannel()
+  const port = channel.port2
+  channel.port1.onmessage = flushCallbacks
+  macroTimerFunc = () => {
+    port.postMessage(1)
+  }
+} else {
+  macroTimerFunc = () => {
+    setTimeout(flushCallbacks, 0)
+  }
+}
+```
