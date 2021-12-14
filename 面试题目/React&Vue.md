@@ -310,3 +310,138 @@ if (typeof setImmediate !== "undefined" && isNative(setImmediate)) {
   }
 }
 ```
+
+---
+
+## React
+
+1. 生命周期
+
+**React 设计的两个核心概念：“组件” 和 “虚拟 DOM”**
+
+当组件初始化时，通过调用生命周期中的 render 方法，生成虚拟 DOM；再通过调用 ReactDOM.render 方法，将虚拟 DOM 转换为真实 DOM
+
+当组件更新时，会再次调用生命周期中的 render 方法，生成新的虚拟 DOM；然后通过 diff 算法定位两次虚拟 DOM 的差异，对发生变化的真实 DOM 做定向更新
+
+**React 15 的生命周期**
+
+```js
+constructor() // 组件挂载 初始化渲染
+componentWillReceiveProps() // 组件更新, 由父组件触发
+shouldComponentUpdate() // 组件更新, 由自身触发
+componentWillMount() // 组件挂载 初始化渲染
+componentWillUpdate() // 组件更新, 由父组件触发
+render()
+componentDidUpdate()
+componentDidMount()
+componentWillUnmount() // 组件卸载
+```
+
+挂载阶段: 组件挂载在一个 React 组件的生命周期中只会发生一次，在这个过程中，组件被初始化，最后被渲染到真实 DOM
+
+```js
+组件挂载: 初始化渲染
+-> constructor() // 对 this.state 初始化
+-> componentWillMount() // 在 render 方法前被触发
+-> render() // 生成需要渲染的内容并返回，不会操作真实 DOM。真实 DOM 的渲染由 ReactDOM.render 完成
+-> componentDidMount() // 在渲染结束后被触发，此时可以访问真实 DOM 。在这个生命周期中也可以做类似于异步请求、数据初始化的操作
+```
+
+更新阶段
+
+```js
+组件更新
+-> componentWillReceiveProps(nextProps) // nextProps 表示新 props 内容
+-> shouldComponentUpdate(nextProps, nextState) // 组件自身触发; 判断 React 组件的输出是否受当前 state 或 props 更改的影响。默认行为是 state 每次发生变化组件都会重新渲染
+-> componentWillUpdate() // componentWillUpdate 在 render 前触发，和 componentWillMount 类似，可以在里面做一些与真实 DOM 不相关的操作
+-> render()
+-> componentDidUpdate() // componentDidUpdate 在组件更新完成后触发，和 componentDidMount 类似，可以在里面处理 DOM 操作；作为子组件更新完毕通知父组件的标志
+```
+
+卸载阶段
+
+- `componentWillUnmount()` 生命周期，可以在里面做一些释放内存，清理定时器等操作
+
+**React 16.3 生命周期**
+
+- 废弃了 `componentWillMount componentWillUpdate componentWillReceiveProps `
+- 新增了 `getDerivedStateFromProps(props, state)` 让组件在 props 变化时派生/更新 state
+
+---
+
+2. `setState`
+   - `setState` 这个 API 是异步的: setState 异步的原因我认为在于，setState 可能会导致 DOM 的重绘，如果调用一次就马上去进行重绘，那么调用多次就会造成不必要的性能损失。设计成异步的话，就可以将多次调用放入一个队列中，在恰当的时候统一进行更新过程
+   ```js
+   handle() {
+    // 初始化 `count` 为 0
+    console.log(this.state.count) // -> 0
+    this.setState({ count: this.state.count + 1 })
+    this.setState({ count: this.state.count + 1 })
+    this.setState({ count: this.state.count + 1 })
+    console.log(this.state.count) // -> 0
+   }
+   ```
+3. 性能优化
+   - `shouldComponentUpdate` 函数中我们可以通过返回布尔值来决定当前组件是否需要更新
+   ```js
+   // 浅比较一下，可以直接使用 PureComponent，底层就是实现了浅比较 state
+   class Test extends React.PureComponent {
+     render() {
+       return <div>PureComponent</div>
+     }
+   }
+   ```
+4. 通信
+
+   - 父子通信
+     - `props & 回调事件`
+   - 兄弟组件通信
+     - 可以通过共同的父组件来管理状态和事件函数。比如说其中一个兄弟组件调用父组件传递过来的事件函数修改父组件中的状态，然后父组件将状态传递给另一个兄弟组件
+   - 跨多层次组件通信
+
+   ```js
+   // 创建 Context，可以在开始就传入值
+   const StateContext = React.createContext()
+   class Parent extends React.Component {
+    render () {
+      return (
+        // value 就是传入 Context 中的值
+        <StateContext.Provider value='yck'>
+          <Child />
+        </StateContext.Provider>
+      )
+    }
+   }
+   class Child extends React.Component {
+    render () {
+      return (
+        <ThemeContext.Consumer>
+          // 取出值
+          {context => (
+            name is { context }
+          )}
+        </ThemeContext.Consumer>
+      );
+    }
+   }
+   ```
+
+   - 任意组件
+     - 通过 Redux 或者 Event Bus 解决
+
+5. `HOC` 是什么? 相比 `mixins` 有什么优点
+
+   - `高阶组件（HOC）`: 实现一个函数，传入一个组件，然后在函数内部再实现一个函数去扩展传入的组件，最后返回一个新的组件，这就是高阶组件的概念，作用就是为了更好的复用代码
+   - `mixins`
+     - 隐含了一些依赖，比如我在组件中写了某个 state 并且在 mixin 中使用了，就这存在了一个依赖关系。万一下次别人要移除它，就得去 mixin 中查找依赖
+     - 多个 mixin 中可能存在相同命名的函数，同时代码组件中也不能出现相同命名的函数，否则就是重写了
+     - 虽然我一个组件还是使用着同一个 mixin，但是一个 mixin 会被多个组件使用，可能会存在需求使得 mixin 修改原本的函数或者新增更多的函数，这样可能就会产生一个维护成本
+
+6. 事件机制
+
+   - JSX 上写的事件并没有绑定在对应的真实 DOM 上，而是通过事件代理的方式，将所有的事件都统一绑定在了 document 上。这样的方式不仅减少了内存消耗，还能在组件挂载销毁时统一订阅和移除事件。
+
+   - 冒泡到 document 上的事件也不是原生浏览器事件，而是 React 自己实现的合成事件（SyntheticEvent）。因此我们如果不想要事件冒泡的话，调用 event.stopPropagation 是无效的，而应该调用 event.preventDefault
+   - 合成事件优点:
+     - 抹平了浏览器之间的兼容问题，另外这是一个跨浏览器原生事件包装器，赋予了跨浏览器开发的能力
+     - 对于合成事件来说，有一个事件池专门来管理它们的创建和销毁，当事件需要被使用时，就会从池子中复用对象，事件回调结束后，就会销毁事件对象上的属性，从而便于下次复用事件对象
