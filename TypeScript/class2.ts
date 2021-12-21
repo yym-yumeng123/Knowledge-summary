@@ -38,7 +38,6 @@
   const yy1 = new User("2121")
 }
 
-
 // ! private 使用继承
 {
   class Person {
@@ -64,6 +63,25 @@
     }
   }
 
-  const ym = new User('yym', 12)
-  
+  const ym = new User("yym", 12)
+}
+
+// ! 泛型
+{
+  interface ArticleInterface<B, C> {
+    title: string
+    isLock: B
+    comments: C[]
+  }
+
+  type CommentType = {
+    content: string
+    author: string
+  }
+
+  const yym: ArticleInterface<Boolean, CommentType> = {
+    title: "js",
+    isLock: false,
+    comments: [{ content: "你好", author: "yym" }],
+  }
 }
