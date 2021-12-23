@@ -125,3 +125,104 @@
   console.log(User.site, "user.site")
   console.log(User.getSite(), "User.site")
 }
+
+// ! 单例
+{
+  class Axios {
+    private static instance: Axios | null = null
+    private constructor() {}
+    static make(): Axios {
+      if (Axios.instance == null) {
+        console.log("创建Axios实例")
+
+        Axios.instance = new Axios()
+      }
+      return Axios.instance
+    }
+  }
+  const instance = Axios.make()
+  const instance1 = Axios.make()
+  const instance2 = Axios.make()
+  const instance3 = Axios.make()
+}
+
+// ! get set
+{
+  class User {
+    public _name: string
+    constructor(name: string) {
+      this._name = name
+    }
+    public get name(): string {
+      return this._name.substring(0, 2)
+    }
+    public set name(value: string) {
+      this._name = value
+    }
+  }
+
+  const a = new User("yym")
+  a.name = "yym张三111121212"
+  console.log(a.name, "yym")
+}
+
+// ! 抽象类 abstract
+{
+  abstract class Animation {
+    abstract move(): void
+    abstract name: string
+    protected getPos(): number[] {
+      return [100, 300]
+    }
+  }
+
+  // 非抽象类“Tank”不会实现继承自“Animation”类的抽象成员“move”
+  class Tank extends Animation {
+    name: string = "敌方坦克"
+    public move(): void {
+      console.log("敌方坦克移动")
+    }
+  }
+
+  class Player extends Animation {
+    name: string = "玩家"
+    public move(): void {
+      console.log("玩家坦克移动")
+    }
+  }
+
+  const abstract = new Tank()
+  console.log(abstract.move())
+}
+
+// ! 接口 interface
+{
+  // 规范
+  interface IAnimation {
+    name: string
+    move(): void
+  }
+  abstract class Animation {
+    protected getPos(): number[] {
+      return [100, 300]
+    }
+  }
+
+  // implements 实现 工具
+  class Tank extends Animation implements IAnimation {
+    name: string = "敌方坦克"
+    public move(): void {
+      console.log("敌方坦克移动")
+    }
+  }
+
+  class Player extends Animation implements IAnimation {
+    name: string = "玩家"
+    public move(): void {
+      console.log("玩家坦克移动")
+    }
+  }
+
+  const abstract = new Tank()
+  console.log(abstract.move())
+}
