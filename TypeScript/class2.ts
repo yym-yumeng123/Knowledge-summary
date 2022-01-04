@@ -226,3 +226,51 @@
   const abstract = new Tank()
   console.log(abstract.move())
 }
+
+// 接口约束 typescript 对象
+{
+  interface UserInterface {
+    name: string
+    age?: number
+    info?(): string
+    isLock?: boolean
+    [key: string]: any
+  }
+
+  let yym: UserInterface = {
+    name: "yym",
+    age: 15,
+    info() {
+      return `${this.name}`
+    },
+    sex: "男",
+  }
+
+  console.log(yym, "杨雨萌")
+
+  function isLock(user: UserInterface, lock: boolean): UserInterface {
+    user.isLock = lock
+    return user
+  }
+
+  isLock({ name: "yym", age: 12 }, true)
+}
+
+// !  class 使用 interface
+{
+  interface IUserInterface {
+    name: string
+    age: number
+  }
+  class User {
+    _info: IUserInterface
+    constructor(user: IUserInterface) {
+      this._info = user
+    }
+    get info(): IUserInterface {
+      return this.info
+    }
+  }
+  const yym = new User({ name: "yym", age: 12 })
+  console.log(yym, "class interface")
+}
