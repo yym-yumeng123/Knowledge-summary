@@ -274,3 +274,33 @@
   const yym = new User({ name: "yym", age: 12 })
   console.log(yym, "class interface")
 }
+
+// ! 数组和枚举
+{
+  // 接口: 定义规范
+  // 枚举: 某一个值
+  enum sexType {
+    BOY,
+    GIRL,
+  }
+  interface IUserInterface {
+    name: string
+    age: number
+    sex: sexType
+  }
+
+  const y1: IUserInterface = {
+    name: "yym1",
+    age: 16,
+    sex: sexType.BOY,
+  }
+  const y2: IUserInterface = {
+    name: "yym2",
+    age: 18,
+    sex: sexType.GIRL,
+  }
+
+  const users: IUserInterface[] = [y1, y2]
+  console.log(users, "users...")
+}
+
