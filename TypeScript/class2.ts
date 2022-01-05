@@ -304,3 +304,103 @@
   console.log(users, "users...")
 }
 
+// ! 模拟支付
+{
+  interface Payinterfaces {
+    handle(price: number): void
+  }
+  class AliPay implements Payinterfaces {
+    public handle(price: number): void {
+      console.log(`支付宝支付${price}元`)
+    }
+  }
+  class WePay implements Payinterfaces {
+    public handle(price: number): void {
+      console.log(`微信支付${price}元`)
+    }
+  }
+
+  function pay(type: string, price: number) {
+    let pay: Payinterfaces
+    switch (type) {
+      case "alipay":
+        pay = new AliPay()
+      case "wepay":
+        pay = new WePay()
+    }
+    // pay.handle(price)
+    // pay.handle(price)
+  }
+}
+
+// ! 接口函数
+{
+  interface Pay {
+    (price: number): Boolean
+  }
+  const wePay: Pay = (price: number) => true
+
+  // 声明合并
+  interface AmimationInterface {
+    name: string
+    move(): void
+  }
+  interface AmimationInterface {
+    end(): void
+  }
+
+  class player implements AmimationInterface {
+    name = "nihc"
+    move() {}
+    end() {}
+  }
+}
+
+// ! type & interface
+{
+  // 1. 基本类型的别名
+  type IsAdmin = boolean
+  type Sex = "boy" | "GIRL"
+
+  // type
+  type User = {
+    name: string
+    age: number
+    show(): string
+    isAdmin: IsAdmin
+    sex: Sex
+    [key: string]: any
+  }
+  const yym: User = {
+    name: "yym",
+    age: 10,
+    show: () => "yym",
+    isAdmin: true,
+    sex: "GIRL",
+  }
+}
+
+// ! type 的合并
+{
+  // 会隐式合并 & 继承
+  interface User {
+    name: string
+  }
+  interface User {
+    age: number
+  }
+  const y1: User = {
+    name: "John",
+    age: 36,
+  }
+
+  type User1 = { name: string }
+  // 不能同名
+  // type User1 = { age: number }
+
+  type name = {
+    name: string
+  }
+  type age = { age: number }
+  type User2 = name & age
+}
