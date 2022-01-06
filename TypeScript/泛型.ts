@@ -21,3 +21,16 @@
   const a = dump<string>("123")
   const b = dump<boolean>(true)
 }
+
+{
+  function getlength<T extends { length: number }>(val: T): number {
+    return val.length
+  }
+
+  getlength("21122")
+  getlength(["1", "2", "3"])
+
+  function getlength1<T>(val: T[]): number {
+    return val.length
+  }
+}
