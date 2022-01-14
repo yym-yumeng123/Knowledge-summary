@@ -463,3 +463,7 @@ class Store {
 const store = new Store();
 const projects = await store.fetchProjects();
 ```
+
+---
+
+### computed
