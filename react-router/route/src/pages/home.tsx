@@ -1,5 +1,4 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom"
 const Home = () => {
   return (
     <div>
@@ -8,10 +7,16 @@ const Home = () => {
         <p>You can do this, I believe in you.</p>
       </main>
       <nav>
-        <Link to="/login">Login</Link>
+        <Link to='/login'>Login</Link>
       </nav>
-    </div>
-  );
-};
 
-export default Home;
+      <h2>子路由</h2>
+      <Link to='/about'>About</Link>
+      <Link to='/other'>Other</Link>
+
+      <Outlet />
+    </div>
+  )
+}
+
+export default Home
