@@ -4,8 +4,8 @@ export default {
     'pages/index/index',
   ],
   window: {
-    backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#fff',
+    backgroundTextStyle: 'dark',
+    navigationBarBackgroundColor: '#3fffff',
     navigationBarTitleText: 'WeChat',
     navigationBarTextStyle: 'black'
   }
