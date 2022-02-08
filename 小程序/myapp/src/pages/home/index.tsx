@@ -1,6 +1,8 @@
-import React, { Component } from "react";
-import { View, Button, Text } from "@tarojs/components";
+import { Component } from "react";
+import { View, Button, Text, Navigator } from "@tarojs/components";
 import { inject, observer } from "mobx-react";
+// 导入 taro
+import Taro from "@tarojs/taro";
 
 type HomeProps = {
   store: {
@@ -28,6 +30,12 @@ class Home extends Component {
 
   componentDidHide() {}
 
+  goIndex = () => {
+    Taro.navigateTo({
+      url: "/pages/index/index",
+    });
+  };
+
   render() {
     const {
       HomeStore,
@@ -37,6 +45,8 @@ class Home extends Component {
       <View className="home">
         <Text>{msg}</Text>
         <Button onClick={() => HomeStore.changeMsg("yym")}>改变</Button>
+        <Button onClick={this.goIndex}>跳转</Button>
+        <Navigator url="/pages/index/index">跳转22</Navigator>
       </View>
     );
   }
