@@ -7,9 +7,9 @@ import { inject, observer } from "mobx-react";
 class About extends Component {
   componentDidMount() {
     const {
-      store: { AboutStore },
+      // store: { AboutStore },
     } = this.props;
-    AboutStore.setList()
+    // AboutStore.setList()
   }
   render() {
     return <View className="view">about</View>;
