@@ -3,12 +3,14 @@ import { Provider } from 'mobx-react'
 
 import counterStore from './store/counter'
 import HomeStore from './store/home'
+import AboutStore from './store/about'
 
 import './app.less'
 
 const store = {
   counterStore,
-  HomeStore
+  HomeStore,
+  AboutStore
 }
 
 class App extends Component {
