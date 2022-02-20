@@ -1,5 +1,6 @@
 export default defineAppConfig({
   pages: [
+    "pages/swiper/index",
     "pages/about/index",
     "pages/person/index",
     "pages/viewpage/index",
