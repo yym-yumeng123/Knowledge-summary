@@ -44,8 +44,8 @@ class Home extends Component {
     return (
       <View className="home">
         <Text>{msg}</Text>
-        <Button onClick={() => HomeStore.changeMsg("yym")}>改变</Button>
-        <Button onClick={this.goIndex}>跳转</Button>
+        <Button onClick={() => HomeStore.changeMsg("杨雨萌")}>改名叫杨雨萌</Button>
+        <Button onClick={this.goIndex}>跳转到另一个页面</Button>
         <Navigator url="/pages/index/index">跳转22</Navigator>
       </View>
     );
