@@ -80,3 +80,79 @@ my_class = MyClass
 
 **常量**
 
+任何以大写字母开头的引用(包括类名和模块名) 都是常量. 常量和变量最大的区别作用域不同
+
+```rb
+module MyModule
+  MyConstant = 'outer constants'
+
+  class MyClass
+    MyConstant = 'inner constnats'
+  end
+end
+```
+常量的路径用双冒号进行分隔
+
+> ------------------------
+
+### 对象和类的小结
+什么是对象? => 对象是一组实例变量外加一个指向其类的引用. 对象的方法并不存在对象本身, 而是存在于类中, 在类中, 这些方法被称为类的实例方法
+
+什么是类? => 类就是一个对象外加一组实例方法和一个对其超类的引用
+
+
+**使用命名空间**
+```rb
+module Bookworm
+  class Text
+
+Bookworm::Text
+```
+
+
+**方法查找**
+
+接收者(receiver)
+祖先链(ancestors chain)
+
+接收者就是你调用方法所在的对象, my_string.reverse() => my_string 就是接收者
+
+方法查找: 首先在接收者的类中查找, 然后再顺着祖先链向上查找, 直到找到该方法
+
+**执行方法**
+
+self 关键字: Ruby 的每一行代码都会在一个对象中被执行 - 这个对象就是所谓的当前对象, 当前对象也可以用 self 表示, 因为可以用 self 关键字对它进行访问
+
+调用一个方法时, 接收者就成为 self, 从这一刻, 所有的实例变量都是 self 的实例变量
+```rb
+class MyClass
+  def testing_self
+    @var = 10
+    my_method()
+    self
+  end
+
+  def my_method
+    @var += 1
+  end
+end
+obj = MyClass.new
+obj.testing_self 
+# 接收者 obj 成为 self, 实例变量 @var 就是obj对象的实例变量
+```
+> 私有 private 意味者什么? 不能明确指定接收者来调用私有方法
+
+**细化**
+解决打开类的问题:
+
+```rb
+module StringExtensions
+  refine String do
+    def to_xxx
+      gsub(/[^\w\s]/, '')
+    end
+  end
+end
+
+using StringExtensions
+```
