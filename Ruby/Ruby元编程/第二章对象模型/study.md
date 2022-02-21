@@ -46,3 +46,37 @@ obj 有一个 my_method 方法, 可以调用 obj.my_method() 方法, 不能说: 
 
 
 2. 类本身也是对象
+
+既然类本身也是对象,那么适用于对象的规则也就适用于类, 类像其它对象一样,也有自己的类. 它的名字叫做 Class
+```rb
+'hello'.class # => String
+String.class # => Class
+```
+在 Ruby 中, 可以像操作其他对象一样对类进行操作, 我们会调用 Class.new方法在运行时创建一个类
+
+```rb
+Class.instance_methods(false) # => [:allcate, :new, :superclass]
+
+# Array类 继承自 Object 类 数组是对象
+Array.superclass # => Object 
+# Object 又继承自 BasicObject
+Object.superclass # => BasicObject
+BasicObject.superclass # => nil
+```
+
+**模块**
+
+```rb
+# 每个类都是一个模块, 类就是带有三个方法(new allocate superclass)的增强模块
+Class.superclass # => Module
+```
+
+如果希望代码包含 (include) 到别的代码中, 应该使用模块, 如果希望某段代码被实例化或者被继承, 应该使用类
+
+**类与普通对象**
+像普通对象一样,, 类也可以通过引用来访问. 变量可以像引用普通对象一样引用类
+
+my_class = MyClass
+
+**常量**
+
