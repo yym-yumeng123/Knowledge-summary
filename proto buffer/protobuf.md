@@ -221,7 +221,31 @@ message Product {
 消息类型是用来远程通信的(Remote Procedure Call, RPC)，可以在 `.proto` 文件中定义 `RPC` 服务接口
 
 ```proto
-service SearchService {
-  rpc Search(SearchRequest) returns (SearchResponse);
+// user.proto
+syntax = "proto3";
+package user;
+
+// 请求参数
+message LoginRequest {
+	string username = 1;
+  string password = 2;
+}
+
+// 响应结果
+message LoginResponse {
+	string access_token = 1;
+  int32 expires = 2;
+}
+
+// 用户相关接口
+service User {
+	// 登录函数
+	rpc login(LoginRequest) returns (LoginResponse);
 }
 ```
+
+
+
+---- 
+
+### 前端通信proto
