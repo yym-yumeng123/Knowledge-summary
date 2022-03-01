@@ -1,0 +1,152 @@
+syntax "proto3"
+// 正在使用 proto3 语法, 如果没有指定, 编译器会使用 proto2. 这个指定语法行必须是文件的非空非注释的第一行
+
+/** 
+ * SearchRequset消息格式有三个字段, 在消息中承载的数据分别对应每一个字段, 每个字段: 一个名字, 一个类型
+ * 假设想定义一个搜索请求的消息格式
+ * 查询字符串, 页数, 每一页多少条结果
+ * 
+ */
+message SearchRequset {
+  // 字符串类型
+  string query = 1; // 标识符 1
+  int32 page_number = 2; // 标识符 2
+  int32 result_per_page = 3;
+}
+
+// optional 可选的, 如果没有为optional的元素指定默认值，就会使用与特定类型相关的默认值
+// 对string来说，默认值是空字符串。对bool来说，默认值是false。对数值类型来说，默认值是0。对枚举来说，默认值是枚举类型定义中的第一个值
+message SearchParams {
+  required string query = 1;
+  optional int32 page_number = 2;
+  optional int32 result_per_page = 3 [default = 10];
+}
+
+// 枚举
+// 需要定义一个消息类型的时候，可能想为一个字段指定某“预定义值序列”中的一个值
+
+message SearchParams1 {
+  required string query = 1;
+  optional int32 page_number = 2;
+  optional int32 result_per_page = 3 [default = 10];
+
+  // 添加了一个叫 Corpus 的枚举类型, 包含所有的值, 一个类型为 Corpus 的字符
+  enum Corpus {
+    UNIVERSITY = 0;
+    WEB = 1;
+    IMAGES = 2;
+    LOCAL = 3;
+    NEWS = 4;
+    VIDEO = 5
+  }
+
+  optional Corpus corpus = 4 [default = UNIVERSITY];
+}
+
+// 使用其它消息类型
+message SearchResponse {
+  repeated Result result  = 1;
+}
+
+message Result {
+  required string url = 1;
+  optional string title = 2;
+  repeated string snippets = 3;
+}
+
+// 导入定义, 上面 Result SearchResposn 在一个文件, 如果已经在其它 proto 定义过了
+import "myproject/other_proto";
+
+// 嵌套类型: 可以在其他消息类型中定义、使用消息类型
+message SearchResponse {
+  message Result {
+    required string url = 1;
+    optional string title = 2;
+    repeated string snippets = 3;
+  }
+
+  repeated Result result = 1;
+}
+
+message SomeotherMesssage {
+  // Parent.Type
+  optional SearchResponse.Resut result = 1;
+}
+
+// 可以嵌套任意多层
+message Outer {
+  message MiddleAA {
+    message Inner {
+      required int64 ival = 1;
+      optional bool booly = 2;
+    }
+  }
+  message MiddleBB {
+    message Inner {
+      required int32 ival = 1;
+      optional bool booly = 2;
+    }
+  }
+}
+
+/**
+* 更改一个消息类型: 已有的消息格式已无法满足新的需求——如，要在消息中添加一个额外的字段——但是同时旧版本写的代码仍然可用
+* 1. 不要更改任何已有的字段的数值标识
+* 2. 非required的字段可以移除——只要它们的标识号在新的消息类型中不再使用
+3. 一个非required的字段可以转换为一个扩展，反之亦然——只要它的类型和标识号保持不变
+4. int32, uint32, int64, uint64,和bool是全部兼容的，这意味着可以将这些类型中的一个转换为另外一个，而不会破坏向前、 向后的兼容性
+5. sint32和sint64是互相兼容的，但是它们与其他整数类型不兼容
+*/
+
+
+// 扩展: 可以将一个范围内的字段标识号声明为可被第三方扩展所用。然后，其他人就可以在他们自己的.proto文件中为该消息类型声明新的字段，而不必去编辑原始文件了
+message Foo {
+  // 消息Foo中，范围[100,199]之内的字段标识号被保留为扩展用
+  extensions 100 to 199;
+}
+
+extend Foo {
+  optional int32 bar = 126;
+}
+
+Foo foo;
+foo.SetExtensions(bar, 15);
+
+
+// Oneof
+// 如果你的消息中有很多可选字段， 并且同时至多一个字段会被设置， 你可以加强这个行为，使用oneof特性节省内存
+// Oneof字段就像可选字段， 除了它们会共享内存， 至多一个字段会被设置。 设置其中一个字段会清除其它oneof字段
+message SampleMessage {
+  oneof test_oneof {
+    string name = 4;
+    SubMessage sub_message = 9;
+  }
+}
+
+// --------------------------
+
+// 包(Package)
+// 可以为.proto文件新增一个可选的package声明符，用来防止不同的消息类型有命名冲突
+package ceres.enterprise;
+message Open {}
+
+// 在其它消息格式定义中可以使用 包名 + 消息名的方式来定义域的类型
+message Foo {
+  required ceres.enterprise.Open open = 1;
+}
+
+// 定义服务
+// 想要将消息类型用在RPC(远程方法调用)系统中, 可以在.proto文件中定义一个RPC服务接口
+// protocol buffer编译器将会根据所选择的不同语言生成服务接口代码及存根
+
+service SearchService {
+  rpc Search (SearchRequset) returns (SearchResponse)
+}
+
+// 选项 Options
+// 一些选项是文件级别的，意味着它可以作用于最外范围，不包含在任何消息内部、enum或服务定义中。
+// 一些选项是消息级别的，意味着它可以用在消息定 义的内部。
+// 当然有些选项可以作用在域、enum类型、enum值、服务类型及服务方法中。
+// 到目前为止，并没有一种有效的选项能作用于所有的类型。
+
+option go_package = "com.example.foo"; // 表明生成go类所在的包
