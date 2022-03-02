@@ -1,5 +1,9 @@
 # Protocol Buffers
 
+### 前言
+
+在之前法人工作中一直使用的是 `JSON` 作为前后端数据交互, 来到我们公司后, 采用的是 `ProtoBuf` 作为前后端数据交互, 所以希望了解一下什么是 `ProtoBuf`, 规则是什么,  如何前后端交互的.
+
 ### 什么是 Protocol Buffer
 
 > [官网](https://developers.google.com/protocol-buffers/docs/overview)  Protocol buffers provide a language-neutral, platform-neutral, extensible mechanism for serializing structured data in a forward-compatible and backward-compatible way. It’s like JSON, except it's smaller and faster, and it generates native language bindings 
@@ -30,6 +34,10 @@ JSON.parse(JSON.stringify(a)) // {name: 'yym', age: 18, sex: '男'}
 - 效率: 二进制协议肯定是优于文本协议的
 - 可读性: 文本协议肯定是由于二进制协议, 带来学习成本
 - 安全性: 二进制协议有天生的优势（全是0和1）
+
+**优点**
+1. 前后端都可以直接在项目中使用protobuf，不用再额外去定义model
+2. protobuf可以直接作为前后端数据和接口的文档，大大减少了沟通成本
 
 **如何创建?**
 
@@ -249,3 +257,114 @@ service User {
 ---- 
 
 ### 前端通信proto
+
+> 前端可以使用 `protobuf.js` 这个库来处理 proto 文件 [官网](https://github.com/protobufjs/protobuf.js#installation)
+
+
+**Web端**
+
+```proto
+syntax = "proto3";
+
+package awesomepackage;
+
+message AwesomeMessage {
+    string awesome_field = 1; // becomes awesomeField
+    repeated string msg = 2;
+}
+
+message A {
+  int32 test = 1;
+  bool isTest = 2;
+}
+```
+
+```zsh
+// 使用 pbjs 命令
+
+// 转换为 json
+npx pbjs -t json src/proto/*.proto > src/proto/proto.json
+
+// 转换为js
+npx pbjs -t json-module -w commonjs -o src/proto/proto.js  src/proto/*.proto
+```
+
+```json
+{
+  "nested": {
+    "awesomepackage": {
+      "nested": {
+        "AwesomeMessage": {
+          "fields": {
+            "awesomeField": {
+              "type": "string",
+              "id": 1
+            },
+            "msg": {
+              "rule": "repeated",
+              "type": "string",
+              "id": 2
+            }
+          }
+        },
+        "A": {
+          "fields": {
+            "test": {
+              "type": "int32",
+              "id": 1
+            },
+            "isTest": {
+              "type": "bool",
+              "id": 2
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+```js
+"use strict";
+
+var $protobuf = require("protobufjs/light");
+
+var $root = ($protobuf.roots["default"] || ($protobuf.roots["default"] = new $protobuf.Root()))
+.addJSON({
+  awesomepackage: {
+    nested: {
+      AwesomeMessage: {
+        fields: {
+          awesomeField: {
+            type: "string",
+            id: 1
+          },
+          msg: {
+            rule: "repeated",
+            type: "string",
+            id: 2
+          }
+        }
+      },
+      A: {
+        fields: {
+          test: {
+            type: "int32",
+            id: 1
+          },
+          isTest: {
+            type: "bool",
+            id: 2
+          }
+        }
+      }
+    }
+  }
+});
+
+module.exports = $root;
+
+```
+
+**node 端**
