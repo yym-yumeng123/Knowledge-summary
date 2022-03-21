@@ -68,3 +68,62 @@ mv Mod_Script Old_Script # 移动整个目录
 rm -i fall  # -i 提示是否删除该文件
 rm -f file/ # 强制删除文件
 ```
+
+### 创建/删除目录
+```zsh
+mkdir new_dir
+
+# 创建多个目录和子目录
+mkdir -p New_Dir/Sub_Dir/Under_dir
+
+
+rmdir New_Dir # 默认只删除空目录, 需要先把目录中的文件删掉
+
+# 整个非空目录是有
+rm -ri New_File # 递归进入文件询问
+
+rm -rf # 删除目录及其所有内容
+```
+
+### 查看文件内容
+1. 查看文件类型
+```bash
+file css.png # PNG image data,
+file New_FIle/ # directory
+```
+
+2. 查看整个文件
+```zsh
+cat include.rb # 显示文本内容
+
+cat about_class.rb  -n # -n 给所有的行加上行号
+
+cat about_class.rb  -T # -T 不想让制表符出现
+```
+
+3. more 命令
+```zsh
+cat 的主要缺陷,一旦运行, 无法控制后面的操作
+
+more 命令会显示文本文件的内容, 在现实每页数据之后停下来
+
+more 命令是分页工具
+
+$ more test.html
+```
+
+4. less 命令
+   - more 命令的升级版, 实现在文本中前后翻动, 还有一些高级搜索
+
+5. 查看部分文件
+   - tail 命令 会显示文件的最后几行
+```shell
+
+tail xxx.text
+tail -n 20 xxx.text # 修改所显示的行数 -n
+
+```
+   - head 命令, 显示文件的前几行
+```zsh
+head -5 xxx.text
+```
