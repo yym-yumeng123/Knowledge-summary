@@ -65,3 +65,31 @@ shouldComponentUpdate(nextProps, nexState) // 根据返回值来决定是否执�
 
 componentWillUnmount(); // 组件在父组件被移除了, 触发; 组件设置了key, key和上次不一样, 也会触发
 ```
+
+5. React 16.3 生命周期
+
+```js
+// 组件挂载:初始化渲染
+constructor() -> getDerivedStateFromProps() -> render() -> componentDidMount()
+
+// 静态方法, 接受两个参数: 父组件props, 当前组件 state, 需要一个对象格式的返回值
+// 对state 的更新, 并非覆盖式, 而是针对某个属性的定向更新
+state getDerivedStateFromProps(props, state) =>有且仅有一个用途: 使用 props 来派生/更新 state
+```
+
+```js
+// Updating: 组件更新
+父组件触发: getDerivedStateFromProps() -> shouldComponentUpdate() -> render -> getSnapshotBeforeUpdate() -> componentDidUpdate()
+组件自身触发: shouldComponentUpdate() -> render -> getSnapshotBeforeUpdate() -> componentDidUpdate()
+
+getDerivedStateFromProps() 来完成props 对 state额映射
+
+// 返回值会作为第三个参数给到 componentDidUpdate(), 执行时机: render 之后, 真实 DOM 更新之前,获取更新前的真实DOM和更新前后额 state & props信息
+getSnapshotBeforeUpdate(prevProps, prevState)
+```
+
+6. Fiber 是 React16 对 React 核心算法的一次重写
+
+- Fiber 会使原本同步的渲染过程变成异步的, 可以被打断的异步渲染模式
+- Fiber 会将一个大任务拆解为许多小任务
+- render 阶段是允许暂停 中止 重启的
