@@ -25,15 +25,15 @@
 4. React 15 生命周期
 
 ```js
-construcotr();
-componentWillReceiveProps();
-shouldComponentUpdate();
-componentWillMount();
-componentWillUpdate();
-componentDidUpdate();
-componentDidMount();
-render();
-compoenentWillUnmount();
+construcotr()
+componentWillReceiveProps()
+shouldComponentUpdate()
+componentWillMount()
+componentWillUpdate()
+componentDidUpdate()
+componentDidMount()
+render()
+compoenentWillUnmount()
 ```
 
 ```js
@@ -63,7 +63,7 @@ shouldComponentUpdate(nextProps, nexState) // 根据返回值来决定是否执�
 ```js
 // Unmounting: 组件的卸载
 
-componentWillUnmount(); // 组件在父组件被移除了, 触发; 组件设置了key, key和上次不一样, 也会触发
+componentWillUnmount() // 组件在父组件被移除了, 触发; 组件设置了key, key和上次不一样, 也会触发
 ```
 
 5. React 16.3 生命周期
@@ -116,4 +116,14 @@ target.addEventListener(type, listener) // 订阅的动作
 on(): 负责注册事件的监听器,指定事件触发时的回调函数
 emit(): 负责触发事件, 通过传参使其再触发的时候携带数据
 off(): 负责监听器的删除
+
+Context API 维护全局状态
+
+1. 创建 Context (过时的API)
+const AppContext = React.createContext(defaultValue)
+const { Provider, Consumer } = AppContext // provider 数据的提供者, Consumer: 数据的消费者
+<Provider value={title, content}></Provider>
+<Consumer>{value => <div>{value.title}</div>}</Consumer>
+
+Redux: 状态管理工具
 ```
