@@ -25,15 +25,15 @@
 4. React 15 生命周期
 
 ```js
-construcotr()
-componentWillReceiveProps()
-shouldComponentUpdate()
-componentWillMount()
-componentWillUpdate()
-componentDidUpdate()
-componentDidMount()
-render()
-compoenentWillUnmount()
+construcotr();
+componentWillReceiveProps();
+shouldComponentUpdate();
+componentWillMount();
+componentWillUpdate();
+componentDidUpdate();
+componentDidMount();
+render();
+compoenentWillUnmount();
 ```
 
 ```js
@@ -63,7 +63,7 @@ shouldComponentUpdate(nextProps, nexState) // 根据返回值来决定是否执�
 ```js
 // Unmounting: 组件的卸载
 
-componentWillUnmount() // 组件在父组件被移除了, 触发; 组件设置了key, key和上次不一样, 也会触发
+componentWillUnmount(); // 组件在父组件被移除了, 触发; 组件设置了key, key和上次不一样, 也会触发
 ```
 
 5. React 16.3 生命周期
@@ -127,3 +127,30 @@ const { Provider, Consumer } = AppContext // provider 数据的提供者, Consum
 
 Redux: 状态管理工具
 ```
+
+### React Hook 16.8+
+
+对 `类组件`和`函数组件`的思考
+
+- 类组件 `class component`
+- 函数组件/无状态组件 `Function Component` 以函数形态
+
+类组件函数组件区别:
+
+- 类组件需要继承 class, 函数组件不需要
+- 类组件可以访问生命周期方法, 函数组件不能
+- 类组件可以获取实例化后的 this, 基于这个 this 做各种各样的事情, 而函数组件不行
+- 类组件可以维护定义 state, 函数组件不行
+
+Hooks 出现之前, 类组件能力边界强于函数组件
+
+类组件是面向对象编程的一种表征
+
+- 封装: 将一类属性和方法, '聚拢'到一个 class 里去
+- 继承: 新的 class 可以通过继承现有 Class 实现对某一类属性和方法的复用
+- 包裹在面向对象下的 "大而全", 开发者编写的逻辑和组件粘在一起, 使得类组件内部的逻辑难以实现和复用
+
+函数收件: 轻巧
+
+- 函数组件会捕获 render 内部的状态, 这是两类组件最大的不同, props 不会改变
+- Hooks: 一套能够使函数组件更加强大, 更灵活的钩子
