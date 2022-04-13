@@ -62,6 +62,7 @@ const App = () => {
         title="Learn More"
         color={color}
         onPress={() => {
+          console.log('1111');
           setColor(Math.random() * 10 > 5 ? 'blue' : 'pink');
           Alert.alert('我是yym');
         }}
