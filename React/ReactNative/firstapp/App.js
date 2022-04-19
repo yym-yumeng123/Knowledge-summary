@@ -20,6 +20,7 @@ import {
   TouchableHighlight,
   Switch,
   TextInput,
+  Platform,
 } from 'react-native';
 
 const DATA = [
@@ -59,14 +60,23 @@ const App = () => {
     <SafeAreaView>
       <Text>我是yym</Text>
       <Button
-        title="Learn More"
+        title="按钮"
+        // disabled
         color={color}
         onPress={() => {
-          console.log('1111');
+          console.log(Platform);
+
           setColor(Math.random() * 10 > 5 ? 'blue' : 'pink');
           Alert.alert('我是yym');
         }}
       />
+      <TouchableHighlight
+        activeOpacity={0.6}
+        underlayColor="#DDDDDD"
+        style={styles.touch_btn}
+        onPress={() => alert('Pressed!')}>
+        <Text>我是Ann</Text>
+      </TouchableHighlight>
       <FlatList
         data={DATA}
         renderItem={renderItem}
@@ -77,6 +87,8 @@ const App = () => {
         source={{
           uri: 'https://reactnative.dev/img/tiny_logo.png',
         }}
+        width={150}
+        height={150}
         blurRadius={1}
       />
 
@@ -119,11 +131,7 @@ const App = () => {
         value={isEnabled}
       />
 
-      <TextInput
-        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-        onChangeText={text => onChangeText(text)}
-        value={value}
-      />
+      <TextInput onChangeText={text => onChangeText(text)} value={value} />
     </SafeAreaView>
   );
 };
@@ -174,6 +182,11 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+  },
+  touch_btn: {
+    backgroundColor: 'green',
+    width: 50,
+    height: 20,
   },
 });
 
