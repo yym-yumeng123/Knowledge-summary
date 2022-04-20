@@ -18,10 +18,14 @@ import {
   Modal,
   Alert,
   TouchableHighlight,
+  TouchableOpacity,
   Switch,
   TextInput,
   Platform,
+  Navigation,
 } from 'react-native';
+import DatePicker from 'react-native-date-picker';
+import Share from 'react-native-share';
 
 const DATA = [
   {
@@ -51,14 +55,35 @@ const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [value, onChangeText] = useState('Useless Placeholder');
+  const [date, setDate] = useState(new Date());
 
   const renderItem = ({item}) => <Item title={item.title} />;
 
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
+  const share = async () => {
+    // Navigation().navigate({path: '/second'});
+    try {
+      await Share.open({
+        title: 'Awesome Contents',
+        url: 'https://awesome.contents.com/',
+        message: '顶级扥工具柜',
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <SafeAreaView>
+      <DatePicker date={date} onDateChange={setDate} />
       <Text>我是yym</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={async () => {
+          await share();
+        }}>
+        <Text style={{color: 'red'}}>跳转到下一页面</Text>
+      </TouchableOpacity>
       <Button
         title="按钮"
         // disabled
