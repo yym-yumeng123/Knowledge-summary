@@ -6,7 +6,7 @@ import SplashScreen from 'react-native-splash-screen';
 AppRegistry.registerComponent(appName, () => {
   setTimeout(() => {
     SplashScreen.hide();
-  }, 3000);
+  }, 1000);
   return App;
 });
 
