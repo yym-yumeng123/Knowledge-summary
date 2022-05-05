@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {
   Text,
   View,
+  Button,
   ScrollView,
   TextInput,
   TouchableHighlight,
@@ -9,9 +10,10 @@ import {
 } from 'react-native';
 import styles from './style.js';
 
-const App = () => {
+const App = props => {
   const [input, setInput] = useState('');
   const [list, setList] = useState([]);
+  const {navigation} = props;
 
   const onPressAddTodo = () => {
     setList([...list, input]);
@@ -53,6 +55,11 @@ const App = () => {
             </View>
           );
         })}
+
+        <Button
+          title="跳转到详情页"
+          onPress={() => navigation.navigate('Details')}
+        />
       </View>
     </ScrollView>
   );
