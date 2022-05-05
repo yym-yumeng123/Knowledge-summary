@@ -13,7 +13,16 @@ import styles from './style.js';
 const App = props => {
   const [input, setInput] = useState('');
   const [list, setList] = useState([]);
+  const [count, setCount] = React.useState(0);
   const {navigation} = props;
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button onPress={() => setCount(c => c + 1)} title="Update count" />
+      ),
+    });
+  }, [navigation]);
 
   const onPressAddTodo = () => {
     setList([...list, input]);
@@ -65,6 +74,8 @@ const App = props => {
             })
           }
         />
+
+        <Text>Count: {count}</Text>
       </View>
     </ScrollView>
   );
