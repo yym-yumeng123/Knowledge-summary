@@ -58,7 +58,12 @@ const App = props => {
 
         <Button
           title="跳转到详情页"
-          onPress={() => navigation.navigate('Details')}
+          onPress={() =>
+            navigation.navigate('Details', {
+              itemId: 1,
+              otherParam: '我是Home页第一个数据',
+            })
+          }
         />
       </View>
     </ScrollView>

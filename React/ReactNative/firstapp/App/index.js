@@ -13,7 +13,11 @@ const HomeScreen = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={App} options={options} />
-        <Stack.Screen name="Details" component={Details} />
+        <Stack.Screen
+          name="Details"
+          component={Details}
+          initialParams={{itemId: 2}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

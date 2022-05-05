@@ -2,7 +2,9 @@ import React from 'react';
 import {Text, View, Button, ScrollView} from 'react-native';
 import styles from './style.js';
 
-const Details = ({navigation}) => {
+const Details = ({navigation, route}) => {
+  const {itemId, otherParam} = route.params;
+  console.log(itemId, otherParam, 'a');
   return (
     <ScrollView style={styles.todo_wrap}>
       <View>
