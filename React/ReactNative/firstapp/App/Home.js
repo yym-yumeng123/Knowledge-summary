@@ -1,5 +1,6 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {Icon} from '@rneui/themed';
 import About from './tab/about';
 import Setting from './tab/settings';
 import My from './tab/my';
@@ -17,7 +18,12 @@ const Home = props => {
       <Tab.Screen
         name="设置"
         component={Setting}
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          tabBarIcon: () => {
+            <Icon name="g-translate" color="#00aced" />;
+          },
+        }}
       />
       <Tab.Screen name="我的" component={My} options={{headerShown: false}} />
     </Tab.Navigator>
