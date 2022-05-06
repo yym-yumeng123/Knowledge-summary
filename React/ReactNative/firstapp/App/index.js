@@ -6,6 +6,7 @@ const Stack = createNativeStackNavigator();
 
 import App from './app';
 import Details from './details';
+import Home from './Home';
 
 function LogoTitle() {
   return <Text>我是标题</Text>;
@@ -28,7 +29,12 @@ const HomeScreen = () => {
             fontWeight: 'bold',
           },
         }}>
-        <Stack.Screen name="Home" component={App} options={options} />
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen name="App" component={App} options={options} />
         <Stack.Screen
           name="Details"
           component={Details}
