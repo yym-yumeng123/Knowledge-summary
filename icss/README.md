@@ -68,3 +68,52 @@ for (let i = 0; i < 10000; i++) {
 ```
 
 ### 盒模型
+
+```
+box = margin + border + padding + content
+
+标准盒模型 怪异盒模型
+box-sizing: 'border-box' | 'content-box'
+
+标准盒模型: margin + border + padding + content
+怪异盒模型: IE 盒子模型 => margin + content => 节点的width/height包括border、padding和content
+
+==> 区别?
+
+width/height 包不包括 border 和 padding
+
+
+块级元素默认独占一行，默认宽度为父节点的100%，可声明边距、填充和宽高
+行内元素默认不独占一行(一行可多个)，默认宽度随内容自动撑开，可声明水平边距和填充，不可声明垂直边距和宽高
+```
+
+### 样式计算
+
+1. 优先级别 => 就近原则; 继承样式的优先级别最低; !important 的优先级别最高, 冲突重新计算
+2. 权重: 10000 => !important; 1000 => 内联样式, 外联样式; 100 => ID 选择器; 10 => 类选择器,伪类选择器;属性选择器; 1 => 标签选择器, 微元素选择器; 0 => 通配选择器;后代选择器; 兄弟选择器
+
+`!important > 内联样式 = 外联样式 > ID 选择器 > 类选择器 = 伪类选择器 = 属性选择器 > 标签选择器 = 伪元素选择器 > 通配选择器 = 后代选择器 = 兄弟选择器`
+
+屏幕分辨率指横纵向上的像素点数，单位是 px
+
+```js
+function AutoResponse(width = 750) {
+  const target = document.documentElement;
+  if (target.clientWidth >= 600) {
+    target.style.fontSize = "80px";
+  } else {
+    target.style.fontSize = (target.clientWidth / width) * 100 + "px";
+  }
+}
+
+AutoResponse();
+
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1">
+```
+
+```css
+/* 基于UI width=750px DPR=2的页面 */
+html {
+  font-size: calc(100vw / 7.5);
+}
+```
