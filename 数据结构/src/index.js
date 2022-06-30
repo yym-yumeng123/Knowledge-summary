@@ -1,6 +1,7 @@
 const Queue = require("./queue");
 const Stack = require("./stack-array");
 const Deque = require("./Deque");
+const Set = require("./Set");
 
 const queue = new Queue();
 console.log("queue.isEmpty()", queue.isEmpty()); // true
@@ -29,3 +30,16 @@ deque.removeBack(); // Camila 决定离开
 console.log(deque.toString()); // Jack
 deque.addFront("John"); // John 回来询问一些信息
 console.log(deque.toString()); // John, Jack
+
+const set = new Set();
+set.add(1);
+console.log("set.values()", set.values()); // [1]
+console.log("set.has(1)", set.has(1)); // true
+console.log("set.has(2)", set.has(2)); // false
+console.log("set.size()", set.size()); // 1
+set.add(3);
+console.log("set.values()", set.values()); // [1, 3]
+console.log("set.has(1)", set.has(1)); // true
+console.log("set.has(2)", set.has(2)); // false
+console.log("set.size()", set.size()); // 2
+console.log("set.delete(1)", set.delete(1));
