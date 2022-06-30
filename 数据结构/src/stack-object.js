@@ -1,12 +1,3 @@
-/*
- * @Author: yym-yumeng123 18026493873@163.com
- * @Date: 2022-06-30 11:13:52
- * @LastEditors: yym-yumeng123 18026493873@163.com
- * @LastEditTime: 2022-06-30 11:44:17
- * @FilePath: /Knowledge-summary/数据结构/src/stack-object.js
- * @Description: 基于对象实现Stack类
- */
-
 class Stack {
   constructor() {
     this.count = 0;
@@ -65,15 +56,4 @@ class Stack {
   }
 }
 
-const stack = new Stack();
-stack.push(2);
-stack.push(8);
-
-console.log("stack", stack); // { count: 2, items: { '0': 2, '1': 8 } }
-
-console.log(
-  "Object.getOwnPropertyNames(stack)",
-  Object.getOwnPropertyNames(stack)
-); // [ 'count', 'items' ] 属性是公开的
-
-console.log("Object.keys(stack)", Object.keys(stack));
+module.exports = Stack;
