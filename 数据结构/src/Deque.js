@@ -1,3 +1,12 @@
+/*
+ * @Author: yym-yumeng123 18026493873@163.com
+ * @Date: 2022-06-30 14:59:53
+ * @LastEditors: yym-yumeng123 18026493873@163.com
+ * @LastEditTime: 2022-06-30 16:14:58
+ * @FilePath: /Knowledge-summary/数据结构/src/Deque.js
+ * @Description: 双端队列
+ */
+
 class Deque {
   constructor() {
     this.count = 0;

@@ -1,3 +1,12 @@
+/*
+ * @Author: yym-yumeng123 18026493873@163.com
+ * @Date: 2022-06-30 14:23:54
+ * @LastEditors: yym-yumeng123 18026493873@163.com
+ * @LastEditTime: 2022-06-30 16:15:24
+ * @FilePath: /Knowledge-summary/数据结构/src/queue.js
+ * @Description: 队列
+ */
+
 class Queue {
   constructor() {
     this.count = 0;
