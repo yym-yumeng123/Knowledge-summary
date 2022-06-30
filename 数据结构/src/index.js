@@ -43,3 +43,54 @@ console.log("set.has(1)", set.has(1)); // true
 console.log("set.has(2)", set.has(2)); // false
 console.log("set.size()", set.size()); // 2
 console.log("set.delete(1)", set.delete(1));
+
+const setA = new Set();
+setA.add(1);
+setA.add(2);
+setA.add(3);
+
+const setB = new Set();
+setB.add(3);
+setB.add(4);
+setB.add(5);
+setB.add(6);
+
+const unionAB = setA.union(setB);
+
+console.log("unionAB.values()", unionAB.values());
+
+const setA1 = new Set();
+setA1.add(1);
+setA1.add(2);
+setA1.add(3);
+const setB1 = new Set();
+setB1.add(2);
+setB1.add(3);
+setB1.add(4);
+const intersectionAB = setA1.intersection(setB1);
+console.log(intersectionAB.values());
+
+const setA2 = new Set();
+setA2.add(1);
+setA2.add(2);
+setA2.add(3);
+const setB2 = new Set();
+setB2.add(2);
+setB2.add(3);
+setB2.add(4);
+const differenceAB = setA2.difference(setB2);
+console.log("differenceAB.values()", differenceAB.values()); // [1]
+
+const setA4 = new Set();
+setA4.add(1);
+setA4.add(2);
+const setB4 = new Set();
+setB4.add(1);
+setB4.add(2);
+setB4.add(3);
+const setC = new Set();
+setC.add(2);
+setC.add(3);
+setC.add(4);
+console.log(setA4.isSubsetOf(setB4));
+console.log(setA4.isSubsetOf(setC));
