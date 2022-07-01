@@ -3,6 +3,7 @@ const Stack = require("./stack-array");
 const Deque = require("./Deque");
 const Set = require("./Set");
 const Dictionary = require("./Dictionary");
+const HashTable = require("./HashTable");
 
 const queue = new Queue();
 console.log("queue.isEmpty()", queue.isEmpty()); // true
@@ -114,3 +115,18 @@ console.log(dictionary.keyValues());
 dictionary.forEach((k, v) => {
   console.log("forEach: ", `key: ${k}, value: ${v}`);
 });
+
+const hash = new HashTable();
+hash.put("Gandalf", "gandalf@email.com");
+hash.put("John", "johnsnow@email.com");
+hash.put("Tyrion", "tyrion@email.com");
+
+console.log(hash.hashCode("Gandalf") + " - Gandalf"); // 19 - Gandalf
+console.log(hash.hashCode("John") + " - John"); // 29 - John
+console.log(hash.hashCode("Tyrion") + " - Tyrion"); // 16 - Tyrion
+
+console.log(hash.get("Gandalf")); // gandalf@email.com
+console.log(hash.get("Loiane")); // undefined
+
+hash.remove("Gandalf");
+console.log(hash.get("Gandalf"));
