@@ -2,6 +2,7 @@ const Queue = require("./queue");
 const Stack = require("./stack-array");
 const Deque = require("./Deque");
 const Set = require("./Set");
+const Dictionary = require("./Dictionary");
 
 const queue = new Queue();
 console.log("queue.isEmpty()", queue.isEmpty()); // true
@@ -94,3 +95,22 @@ setC.add(3);
 setC.add(4);
 console.log(setA4.isSubsetOf(setB4));
 console.log(setA4.isSubsetOf(setC));
+
+const dictionary = new Dictionary();
+dictionary.set("Gandalf", "gandalf@email.com");
+dictionary.set("John", "johnsnow@email.com");
+dictionary.set("Tyrion", "tyrion@email.com");
+console.log("dictionary.hasKey('John')", dictionary.hasKey("John")); // true
+console.log("dictionary.size()", dictionary.size()); // 3
+console.log(dictionary.keys()); // [ 'Gandalf', 'John', 'Tyrion' ]
+console.log(dictionary.values()); // [ 'gandalf@email.com', 'johnsnow@email.com', 'tyrion@email.com' ]
+console.log(dictionary.get("Tyrion")); // tyrion@email.com
+
+dictionary.remove("John");
+console.log(dictionary.keys());
+console.log(dictionary.values());
+console.log(dictionary.keyValues());
+
+dictionary.forEach((k, v) => {
+  console.log("forEach: ", `key: ${k}, value: ${v}`);
+});
