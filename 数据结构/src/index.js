@@ -4,6 +4,7 @@ const Deque = require("./Deque");
 const Set = require("./Set");
 const Dictionary = require("./Dictionary");
 const HashTable = require("./HashTable");
+const LinkedList = require("./LinkedList");
 
 const queue = new Queue();
 console.log("queue.isEmpty()", queue.isEmpty()); // true
@@ -130,3 +131,9 @@ console.log(hash.get("Loiane")); // undefined
 
 hash.remove("Gandalf");
 console.log(hash.get("Gandalf"));
+
+const list = new LinkedList();
+list.push(15);
+list.push(10);
+
+console.log("list", list);
