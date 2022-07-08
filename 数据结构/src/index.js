@@ -5,6 +5,7 @@ const Set = require("./Set");
 const Dictionary = require("./Dictionary");
 const HashTable = require("./HashTable");
 const LinkedList = require("./LinkedList");
+const BinarySearchTree = require("./BinarySearchTree");
 
 const queue = new Queue();
 console.log("queue.isEmpty()", queue.isEmpty()); // true
@@ -137,3 +138,21 @@ list.push(15);
 list.push(10);
 
 console.log("list", list);
+
+const tree = new BinarySearchTree();
+tree.insert(11);
+console.log("tree", tree);
+tree.insert(7);
+tree.insert(15);
+tree.insert(5);
+tree.insert(3);
+tree.insert(9);
+tree.insert(8);
+tree.insert(10);
+tree.insert(13);
+tree.insert(12);
+tree.insert(14);
+tree.insert(20);
+tree.insert(18);
+tree.insert(25);
+console.log(tree, "tree1");
