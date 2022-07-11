@@ -60,6 +60,26 @@ class BinarySearchTree {
       this.insertNode(this.root, key);
     }
   }
+
+  /**
+   * 中序遍历
+   * @param {接收一个回调函数作为参数} callback
+   */
+  inOrderTraverse(callback) {
+    // 定义我们对遍历到的每个节点进行的操作
+    this.inOrderTraverseNode(this.root, callback);
+  }
+
+  // 辅助方法，来接收一个节点和对应的回调函数作为参数
+  inOrderTraverseNode(node, callback) {
+    // 首先要检查以参数形式传入的节点是否为 null, 停止递归继续执行的判断条件
+    if (node != null) {
+      // 递归调用相同的函数来访问左侧子节点, 再访问右侧子节点
+      this.inOrderTraverseNode(node.left, callback);
+      callback(node.key);
+      this.inOrderTraverseNode(node.right, callback);
+    }
+  }
 }
 
 module.exports = BinarySearchTree;
