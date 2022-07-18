@@ -158,4 +158,7 @@ tree.insert(25);
 console.log(tree, "tree1");
 
 const printNode = (value) => console.log(value); // {6}
-tree.inOrderTraverse(printNode); // {7}
+tree.inOrderTraverse(printNode);
+tree.preOrderTraveser(printNode);
+
+console.log(tree.min(), "min");
