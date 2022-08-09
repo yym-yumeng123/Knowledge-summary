@@ -1,3 +1,7 @@
+/**
+ * 选择排序
+ */
+
 const defaultCompare = require("./defaultCompare");
 const swap = require("./swap");
 const createNonSortedArray = require("./createNonSortedArray");
