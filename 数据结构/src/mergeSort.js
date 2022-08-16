@@ -59,3 +59,5 @@ console.log(array.join(), "join");
 console.log(array, "join332");
 array = mergeSort(array);
 console.log(array.join());
+
+module.exports = mergeSort;
