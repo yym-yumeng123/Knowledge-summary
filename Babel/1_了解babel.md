@@ -48,3 +48,132 @@ generate 阶段会把 AST 打印成目标代码字符串，并且会生成 sourc
 ### 总结
 
 了解了编译和转译的区别，明确了 babel 是一个 js transpiler。然后学习了 babel 编译流程的三个步骤 parse、transform、generate
+
+---
+
+# Babel 的 AST
+
+babel 编译的第一步是把源码 parse 成抽象语法树 AST （Abstract Syntax Tree）, 后续对这个 AST 进行转换
+
+### 常见的 AST 节点
+
+AST 是对源码的抽象，字面量、标识符、表达式、语句、模块语法、class 语法都有各自的 AST。我们分别来了解一下：
+
+- Literal 字面量的意思
+
+```js
+let name = 'guang'
+
+'guang' => '字符串字面量' => StringLiteral
+NumberLiterial
+BooleanLiterial
+RegExpLiterial
+
+xxxLiterial
+```
+
+- Identifier 标识符的意思 => 变量名、属性名、参数名等各种声明和引用的名字，都是 Identifer
+
+```js
+const name = "guang"; // name 是
+
+function say(name) {
+  // say name
+  console.log(name); // console log name
+}
+
+const obj = {
+  // obj name
+  name: "guang",
+};
+```
+
+- Statement 语句 是可以独立执行的单位，比如 break、continue、debugger、return 或者 if 语句、while 语句、for 语句，还有声明语句，表达式语句等
+
+```js
+break; // BreakStatement
+continue; // COntinueStatement
+return; // ReturnStatement
+debugger;
+throw Error();
+{}
+try {} catch(e) {} finally{}
+for (let key in obj) {}
+for (let i = 0;i < 10;i ++) {}
+while (true) {}
+do {} while (true)
+switch (v){case 1: break;default:;}
+label: console.log();
+with (a){}
+
+```
+
+- Declaration 声明语句是一种特殊的语句, 它执行的逻辑是在作用域内声明一个变量、函数、class、import、export 等
+
+```js
+const a = 1; // VariableDeclaration
+function b() {} // FunctionDeclaration
+class C {} // ClassDeclaration
+
+import d from "e"; // ImportDeclaration
+
+export default e = 1;
+export { e };
+export * from "e";
+```
+
+- Expression 表达式, 特点是执行完以后有返回值，这是和语句 (statement) 的区别
+
+```js
+[1,2,3] // ArrayExpression
+a = 1 // AssignmentExpression 赋值表达式
+1 + 2;
+-1;
+function(){};
+() => {};
+class{};
+a;
+this;
+super; // Super
+a::b; // 绑定表达式
+```
+
+因为 identifier、super 有返回值，符合表达式的特点，所以也是 expression
+
+- Class 语法也有专门的 AST 节点来表示
+  - 整个 class 的内容是 ClassBody, 属性是 ClassProperty
+- Modules
+  - es module 是语法级别的模块规范，所以也有专门的 AST 节点
+- import
+
+  ```js
+  // named import
+  import { a, b } from "c";
+
+  // default import
+  import a from "a";
+
+  // namespaced import
+  import * as b from "b";
+  ```
+
+- export
+
+  ```js
+  // named export
+  export { a, b };
+  // default export
+  export default a;
+  // all export
+  export * from "c";
+  ```
+
+- Program & Directive
+
+program 是代表整个程序的节点，它有 body 属性代表程序体，存放 statement 数组，就是具体执行的语句的集合。还有 directives 属性，存放 Directive 节点，比如"use strict" 这种指令会使用 Directive 节点表示。
+
+- File & Comment
+
+babel 的 AST 最外层节点是 File，它有 program、comments、tokens 等属性，分别存放 Program 程序体、注释、token 等，是最外层节点。
+
+### AST 可视化工具
