@@ -177,3 +177,218 @@ program 是代表整个程序的节点，它有 body 属性代表程序体，存
 babel 的 AST 最外层节点是 File，它有 program、comments、tokens 等属性，分别存放 Program 程序体、注释、token 等，是最外层节点。
 
 ### AST 可视化工具
+
+- [可视化工具](https://astexplorer.net/)
+
+### AST 的公共属性
+
+每种 AST 都有自己的属性, 但是他们也有一些公共属性
+
+- `type` AST 节点的类型
+- `start end loc`: start 和 end 代表该节点在源码中的开始和结束下标, loc 属性是一个对象, 有 line 和 column 属性分别记录开始和结束的行列号
+- `leadingComments、innerComments、trailingComments`: 表示开始的注释、中间的注释、结尾的注释，每个 AST 节点中都可能存在注释
+- extra: 记录一些额外的信息, 处理一些特殊情况
+
+---
+
+# Babel API
+
+### babel 的 api 有哪些
+
+babel 的编译流程分为三步：parse、transform、generate
+
+- parse 阶段有 `@babel/parser`, 功能是把源码转成 AST
+- transform 阶段有 `@babel/traverse`, 可以遍历 AST, 并调用 visitor 函数修改 AST, 修改 AST 自然设计到 AST 的判断, 创建, 修改等, 这时候就需要 `@babel/types`, 当批量创建 AST 的时候可以使用 `@babel/template` 来简化 AST 创建逻辑
+- generate 阶段会把 AST 打印为目标代码字符串, 同时生成 sourcemap, 需要 `@babel/generate` 包
+- 中途遇到错误想打印代码位置的时候，使用 @babel/code-frame 包
+- babel 的整体功能通过 @babel/core 提供，基于上面的包完成 babel 整体的编译流程，并应用 plugin 和 preset
+
+主要学习的就是 **@babel/parser，@babel/traverse，@babel/generator，@babel/types，@babel/template** 这五个包的 api 的使用
+
+### @babel/parser
+
+babel parser 叫 babylon，是基于 acorn 实现的，扩展了很多语法，可以支持 es next（现在支持到 es2020）、jsx、flow、typescript 等语法的解析
+
+babel parser 默认只能 parse js 代码，jsx、flow、typescript 这些非标准的语法的解析需要指定语法插件
+
+提供了两个 api: parse 和 parseExpression, 都是把源码转成 AST, 不过 parse 返回的 AST 根节点是 File(整个 AST), parseExpression 机会的根节点是 Expression, 力度不同
+
+```ts
+function parse(input: string, options?: ParseOptions): File;
+function parseExpression(input: string, options?: ParserOptions): Expression;
+```
+
+parse 的内容是什么?
+
+- plugins: 指定 jsx, typescript, flow 等插件来解析对应的语法
+- allowXxx: 指定一些语法是否允许, 比如函数外的 await, 没生命的 export 等
+- sourceType: 指定是否支持解析模板语法, 有 module, script, unambiguous 3 个取值
+  - module: 解析 esmodule 的语法
+  - script: 不解析 es module 的语法
+  - unambiguous: 根据内容是否有 import 和 export 来自动设置 module 还是 script
+
+```js
+const parse = require("@babel/parser");
+const ast = parse.parse("代码", {
+  sourceType: "unambiguous",
+  plugins: ["jsx"],
+});
+```
+
+以什么方式 parse
+
+- `strictMode` 是否是严格模式
+- `startLine` 从源码的哪一行开始 parse
+- `errorRecovery` 出错时是否记录错误并继续往下 parse
+- `tokens` parse 的时候是否保留 token 信息
+- `ranges` 是否在 ast 节点中添加 ranges 属性
+
+### @babel/traverse
+
+parse 出的 AST 由 @babel/traverse 来遍历和修改, babel traverse 包提供了 traverse 方法：
+
+```js
+// parent 指定要遍历的 AST节点, opts 指定 visitor 函数, babel 会在遍历 parent 对应的 AST 时调用相应的 visitor 函数
+function traverse(parent, opts)
+```
+
+**遍历过程**
+
+visitor 是指定对什么 AST 做什么处理的函数，babel 会在遍历到对应的 AST 时回调它们
+
+```js
+traverse(ast, {
+  FunctionDeclaration: {
+    enter(path, state) {} // 进入节点时调用
+    exit(path, state) {} // 离开节点时调用
+  }
+})
+
+// 如果只指定了一个函数，那就是 enter 阶段会调用的：
+traverse(ast, {
+  FunctionDeclaration(path, state) {} // 进入节点时调用
+})
+
+
+visit 一个节点的过程
+
+1. 调用 enter
+2. 遍历子节点
+3, 调用 exit
+```
+
+同一个 visitor 函数可以用于多个 AST 节点的处理，方式是指定一系列 AST，用 | 连接
+
+```js
+// 进入 FunctionDeclaration 和 VariableDeclaration 节点时调用
+traverse(ast, {
+  "FunctionDeclaration|VariableDeclaration"(path, state) {},
+});
+```
+
+1. path
+
+AST 是棵树，遍历过程中肯定是有个路径的，path 就记录了这个路径
+最重要的是 path 有很多属性和方法，比如记录父子、兄弟等关系的：
+
+- path.node 指向当前的 AST 节点
+- path.parent 指向负极 AST 节点
+- path.getSibling、path.getNextSibling、path.getPrevSibling 获取兄弟节点
+- path.find 从当前节点向上查找节点
+- path.get、path.set 获取 / 设置属性的 path
+- path.scope 获取当前节点的作用域信息
+- path.isXxx 判断当前节点是不是 xx 类型
+- path.assertXxx 判断当前节点是不是 xx 类型，不是则抛出异常
+- path.insertBefore、path.insertAfter 插入节点
+- path.replaceWith、path.replaceWithMultiple、replaceWithSourceString 替换节点
+- path.remove 删除节点
+- path.skip 跳过当前节点的子节点的遍历
+- path.stop 结束后续遍历
+
+2. state
+
+state 则是遍历过程中在不同节点之间传递数据的机制，插件会通过 state 传递 options 和 file 信息，我们也可以通过 state 存储一些遍历过程中的共享数据
+
+### @babel/types
+
+遍历 AST 的过程中需要创建一些 AST 和判断 AST 的类型，这时候就需要 @babel/types 包
+
+```js
+// 要创建IfStatement就可以调用
+t.ifStatement(test, consequent, alternate);
+
+// 判断节点是否是 IfStatement 就可以调用 isIfStatement 或者 assertIfStatement
+t.isIfStatement(node, opts);
+t.assertIfStatement(node, opts);
+
+// opts 可以指定一些属性是什么值，增加更多限制条件，做更精确的判断
+t.isIdentifier(node, { name: "paths" });
+```
+
+### @babel/template
+
+通过 @babel/types 创建 AST 还是比较麻烦的，要一个个的创建然后组装，如果 AST 节点比较多的话需要写很多代码，这时候就可以使用 @babel/template 包来批量创建。
+
+```js
+const ast = template(code, [opts])(args);
+// template.ast 返回的是整个 AST。
+const ast = template.ast(code, [opts]);
+// template.program 返回的是 Program 根节点。
+const ast = template.program(code, [opts]);
+```
+
+### @babel/generator
+
+AST 转换完之后就要打印成目标代码字符串，通过 @babel/generator 包的 generate api
+
+```js
+// 第一个参数是要打印的 AST
+// 第二个参数是 options，指定打印的一些细节，比如通过 comments 指定是否包含注释，通过 minified 指定是否包含空白字符。
+// 第三个参数当多个文件合并打印的时候需要用到
+function (ast: Object, opts: Object, code: string): {code, map}
+
+
+import generate from "@babel/generator";
+
+const { code, map } = generate(ast, { sourceMaps: true })
+```
+
+### @babel/code-frame
+
+babel 的报错一半都会直接打印错误位置的代码，而且还能高亮，
+
+```js
+// options 可以设置 highlighted （是否高亮）、message（展示啥错误信息）。
+const result = codeFrameColumns(rawLines, location, {
+  /* options */
+});
+```
+
+### @babel/core
+
+babel 基于这些包来实现编译、插件、预设等功能的包就是 @babel/core。
+
+```js
+// 这三个 transformXxx 的 api 分别是从源代码、源代码文件、源代码 AST 开始处理，最终生成目标代码和 sourcemap。
+
+// options 主要配置 plugins 和 presets，指定具体要做什么转换
+transformSync(code, options); // => { code, map, ast }
+
+transformFileSync(filename, options); // => { code, map, ast }
+
+transformFromAstSync(parsedAst, sourceCode, options); // => { code, map, ast }
+
+// api 也同样提供了异步的版本，异步地进行编译，返回一个 promise
+
+transformAsync("code();", options).then((result) => {});
+transformFileAsync("filename.js", options).then((result) => {});
+transformFromAstAsync(parsedAst, sourceCode, options).then((result) => {});
+```
+
+- `@babel/parser` 对源码进行 parse，可以通过 plugins、sourceType 等来指定 parse 语法
+- `@babel/traverse` 通过 visitor 函数对遍历到的 ast 进行处理，分为 enter 和 exit 两个阶段，具体操作 AST 使用 path 的 api，还可以通过 state 来在遍历过程中传递一些数据
+- `@babel/types` 用于创建、判断 AST 节点，提供了 xxx、isXxx、assertXxx 的 api
+- `@babel/template` 用于批量创建节点
+- `@babel/code`-frame 可以创建友好的报错信息
+- `@babel/generator` 打印 AST 成目标代码字符串，支持 comments、minified、sourceMaps 等选项。
+- `@babel/core` 基于上面的包来完成 babel 的编译流程，可以从源码字符串、源码文件、AST 开始。
