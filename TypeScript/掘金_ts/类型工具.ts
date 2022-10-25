@@ -141,3 +141,76 @@ interface StringifiedFoo {
   prop3: string;
   prop4: string;
 }
+
+// ---
+
+const str2 = "linbudu";
+const obj4 = { name: "linbudu" };
+const nullVar = null;
+const undefinedVar = undefined;
+const func4 = (input: string) => {
+  return input.length > 10;
+};
+
+type Str = typeof str2; // "linbudu"
+type Obj = typeof obj4; // { name: string; }
+type Null = typeof nullVar; // null
+type Undefined = typeof undefinedVar;
+type Func = typeof func4; // (input: string) => boolean
+
+const func5: typeof func4 = (name: string) => {
+  return name === "yym";
+};
+
+type FuncReturnType = ReturnType<typeof func4>;
+
+function isString(input: unknown): input is string {
+  return typeof input === "string";
+}
+
+function foo(input: string | number) {
+  if (isString(input)) {
+    // 类型“string | number”上不存在属性“replace”。
+    input.replace("linbudu", "linbudu599");
+  }
+  if (typeof input === "number") {
+  }
+  // ...
+}
+
+export type Falsy = false | "" | 0 | null | undefined;
+export const isFalsy = (val: unknown): val is Falsy => !val;
+export type Primitive = string | number | boolean | undefined;
+export const isPrimitive = (val: unknown): val is Primitive =>
+  ["string", "number", "boolean", "undefined"].includes(typeof val);
+
+interface Foo10 {
+  foo: string;
+  fooOnly: boolean;
+  shared: number;
+}
+
+interface Bar10 {
+  bar: string;
+  barOnly: boolean;
+  shared: number;
+}
+
+function handle(input: Foo10 | Bar10) {
+  if ("foo" in input) {
+    input.fooOnly;
+  } else {
+    input.barOnly;
+  }
+}
+function handle1(input: Foo10 | Bar10) {
+  if ("shared" in input) {
+    input.fooOnly;
+  } else {
+    input.barOnly;
+  }
+}
+
+//-----
+
+// import assert from 'assert'
