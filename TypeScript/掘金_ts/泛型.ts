@@ -91,3 +91,35 @@ interface IUserProfileRes {
 }
 
 function fetchUserProfile(): Promise<IRes1<IUserProfileRes>> {}
+
+// ------
+
+function handle(input: any): any {}
+function handle(input: string | number | {}): string | number | {} {}
+
+function handle1<T>(input: T): T {}
+const author = "yym";
+let authorAge = 18;
+
+handle1(author);
+handle1(authorAge);
+
+function swap<T, U>([start, end]: [T, U]): [U, T] {
+  return [end, start];
+}
+
+const swap1 = swap(["yym", 59]);
+const swap2 = swap([null, 59]);
+const swap3 = swap([{ name: "yym" }, {}]);
+
+const object = { a: 1, b: 2, c: 3 };
+_.pick(object, ["a", "c"]);
+
+
+pick<T extends object, U extends keyof T>(object: Text, ...props: Array<U>): Pick<T, U>
+
+function handle2<T>(payload: T): Promise<[T]> {
+  return new Promise<[T]>((res, rej) => {
+    res([payload])
+  })
+}
