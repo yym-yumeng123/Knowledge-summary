@@ -75,3 +75,19 @@ type ProcessInput<
   SecondInput extends Input = Input,
   ThirdInput extends Input = SecondInput
 > = number;
+
+// ---------
+
+interface IRes1<TData = unknown> {
+  code: number;
+  error?: string;
+  data: TData;
+}
+
+interface IUserProfileRes {
+  name: string;
+  homepage: string;
+  avatar: string;
+}
+
+function fetchUserProfile(): Promise<IRes1<IUserProfileRes>> {}
