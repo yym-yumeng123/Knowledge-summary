@@ -121,3 +121,39 @@ type PromiseValue1<T> = T extends Promise<infer V>
   : T;
 
 type PromiseValueResult3 = PromiseValue1<Promise<Promise<boolean>>>;
+
+//---------
+
+type Condition<T> = T extends 1 | 2 | 3 ? T : never;
+type Res11 = Condition<1 | 2 | 3 | 4 | 5>; // 1 | 2 | 3
+type Res12 = 1 | 2 | 3 | 4 | 5 extends 1 | 2 | 3 ? 1 | 2 | 3 | 4 | 5 : never; // never
+
+type Naked<T> = T extends boolean ? "Y" : "N";
+type Wrapped<T> = [T] extends [boolean] ? "Y" : "N";
+
+// "N" | "Y"
+type Res13 = Naked<number | boolean>;
+// "N"
+type Res14 = Wrapped<number | boolean>;
+
+export type NoDistribute<T> = T & {};
+type Wrapped1<T> = NoDistribute<T> extends boolean ? "Y" : "N";
+
+type Res15 = Wrapped1<number | boolean>; // "N"
+type Res16 = Wrapped1<true | false>; // "Y"
+type Res17 = Wrapped1<true | false | 599>; // "N"
+
+type IsNever<T> = [T] extends [never] ? true : false;
+type IsNeverRes1 = IsNever<never>; // true
+type IsNeverRes2 = IsNever<"linbudu">; // false
+
+type Tmp1 = any extends string ? 1 : 2; // 1 | 2
+type Tmp2<T> = T extends string ? 1 : 2;
+type Tmp2Res = Tmp2<any>; // 1 | 2
+
+// 如果判断条件是 any，那么仍然会进行判断
+type Special1 = any extends any ? 1 : 2; // 1
+type Special2<T> = T extends any ? 1 : 2;
+type Special2Res = Special2<any>; // 1
+
+type IsAny<T> = 0 extends 1 & T ? true : false;
