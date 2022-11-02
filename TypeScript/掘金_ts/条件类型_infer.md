@@ -88,3 +88,112 @@ type NonStringResult2 = FunctionConditionType<() => number>;
 ```
 
 ### infer 关键字
+
+TS 中支持通过 `infer` 关键字 **在条件类型中提取类型的某一部分信息**
+
+```ts
+//  infer是 inference 的缩写，意为推断
+// infer R就表示待推断的类型
+// infer 只能在条件类型中使用
+type FunctionReturnType<T extends Func> = T extends (...args: any[]) => infer R
+  ? R
+  : never;
+```
+
+类型结构不局限于函数类型结构, 还可以是数组
+
+```ts
+type Swap<T extends any[]> = T extends [infer A, infer B] ? [B, A] : T;
+type SwapResult1 = Swap<[1, 2]>; // 符合元组结构，首尾元素替换[2, 1]
+type SwapResult2 = Swap<[1, 2, 3]>; // 不符合结构，没有发生替换，仍是 [1, 2, 3]
+```
+
+可以使用 `rest` 操作符来处理任意长度的情况
+
+- infer 甚至可以和 rest 操作符一样同时提取一组不定长的类型
+
+```ts
+// 提取首尾两个
+type ExtractStartAndEnd<T extends any[]> = T extends [
+  infer Start,
+  ...any[],
+  infer End
+]
+  ? [Start, End]
+  : T;
+
+type ExtractResult1 = ExtractStartAndEnd<[1, 2, 3, 4]>; // [1, 4]
+
+// 调换首尾两个
+type SwapStartAndEnd<T extends any[]> = T extends [
+  infer Start,
+  ...infer Left,
+  infer End
+]
+  ? [End, ...Left, Start]
+  : T;
+
+type SwapStartAndEndResult1 = SwapStartAndEnd<[1, 3, 5, 7]>; // [7, 3, 5, 1]
+
+// 调换开头两个
+type SwapFirstTwo<T extends any[]> = T extends [
+  infer Start1,
+  infer Start2,
+  ...infer Left
+]
+  ? [Start2, Start1, ...Left]
+  : T;
+```
+
+```ts
+type ArrayItemType<T> = T extends Array<infer ElementType> ? ElementType : never;
+
+type ArrayItemTypeResult1 = ArrayItemType<[]>; // never
+type ArrayItemTypeResult2 = ArrayItemType<string[]>; // string
+type ArrayItemTypeResult3 = ArrayItemType<[string, number]>; // string | number
+```
+
+除了数组, infer 结构也可以是接口
+
+```ts
+// 提取对象的属性类型
+type PropType<T, K extends keyof T> = T extends { [Key in K]: infer R }
+  ? R
+  : never;
+
+type PropTypeResult1 = PropType<{ name: string }, 'name'>; // string
+type PropTypeResult2 = PropType<{ name: string; age: number }, 'name' | 'age'>; // string | number
+
+// 反转键名与键值
+// ，TypeScript 中这样对键值类型进行 infer 推导，将导致类型信息丢失，而不满足索引签名类型只允许 string | number | symbol 的要求。
+type ReverseKeyValue<T extends Record<string, unknown>> = T extends Record<infer K, infer V> ? Record<V & string, K> : never
+
+type ReverseKeyValueResult1 = ReverseKeyValue<{ "key": "value" }>; // { "value": "key" }
+```
+
+infer 还可以是 Promise 结构
+
+```ts
+type PromiseValue<T> = T extends Promise<infer V> ? V : T;
+
+type PromiseValueResult1 = PromiseValue<Promise<number>>; // number
+type PromiseValueResult2 = PromiseValue<number>; // number，但并没有发生提取
+```
+
+infer 关键字也经常被使用在嵌套的场景中，包括对类型结构深层信息地提取，以及对提取到类型信息的筛选等
+
+```ts
+
+type PromiseValue<T> = T extends Promise<infer V>
+  ? V extends Promise<infer N>
+    ? N
+    : V
+  : T;
+
+type PromiseValueResult3 = PromiseValue<Promise<Promise<boolean>>>
+
+// 递归
+type PromiseValue<T> = T extends Promise<infer V> ? PromiseValue<V> : T;
+```
+
+条件类型在泛型的基础上支持了基于类型信息的动态条件判断，但无法直接消费填充类型信息，而 infer 关键字则为它补上了这一部分的能力，让我们可以进行更多奇妙的类型操作
