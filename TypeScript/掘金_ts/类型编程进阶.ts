@@ -120,3 +120,97 @@ type MarkPropsAsReadonly<
   T extends object,
   K extends keyof T = keyof T
 > = Flatten<Omit<T, K> & Readonly<Pick<T, K>>>;
+
+type FunctionStruct = (...args: any[]) => any;
+
+type FunctionKeys<T extends object> = {
+  [K in keyof T]: T[K] extends FunctionStruct ? K : never;
+}[keyof T];
+
+type Tmp<T extends object> = {
+  [K in keyof T]: T[K] extends FunctionStruct ? K : never;
+};
+
+type Res = Tmp<{
+  foo: () => void;
+  bar: () => number;
+  baz: number;
+}>;
+
+type ResEqual = {
+  foo: "foo";
+  bar: "bar";
+  baz: never;
+};
+
+type WhatWeWillGet = Res[keyof Res]; // 'foo' | 'bar'
+type WhatWillWeGetEqual1 = Res["foo" | "bar" | "baz"];
+type WhatWillWeGetEqual2 = Res["foo"] | Res["bar"] | Res["baz"];
+type WhatWillWeGetEqual3 = "foo" | "bar" | never;
+
+type ExpectedPropKeys<T extends object, valueType> = {
+  [Key in keyof T]-?: T[Key] extends valueType ? Key : never;
+}[keyof T];
+
+type FunctionKeys1<T extends object> = ExpectedPropKeys<T, FunctionStruct>;
+
+type AAA = FunctionKeys1<{
+  foo: () => void;
+  bar: () => number;
+  baz: number;
+}>;
+
+type PickByValueType<T extends object, valueType> = Pick<
+  T,
+  ExpectedPropKeys<T, valueType>
+>;
+
+// {
+//   foo: string;
+// }
+type PickResult1 = PickByValueType<{ foo: string; bar: number }, string>;
+
+// {
+//   foo: string;
+//   bar: number;
+// }
+type PickResult2 = PickByValueType<
+  { foo: string; bar: number; baz: boolean },
+  string | number
+>;
+
+type FilteredPropKeys<T extends object, ValueType> = {
+  [Key in keyof T]-?: T[Key] extends ValueType ? never : Key;
+}[keyof T];
+
+type OmitByValueType<T extends object, ValueType> = Pick<
+  T,
+  FilteredPropKeys<T, ValueType>
+>;
+
+type OmitRes1 = OmitByValueType<{ foo: string; bar: number }, string>;
+type OmitRes2 = OmitByValueType<
+  { foo: string; bar: number; baz: boolean },
+  string | number
+>;
+
+// 结合
+type Conditional<Value, Condition, Resloved, Rejectd> = Value extends Condition
+  ? Resloved
+  : Rejectd;
+
+type ValueTypeFilter<T extends object, ValueType, Positive extends boolean> = {
+  [Key in keyof T]-?: T[Key] extends ValueType
+    ? Conditional<Positive, true, Key, never>
+    : Conditional<Positive, true, never, Key>;
+}[keyof T];
+
+type PickByValueType1<T extends object, ValueType> = Pick<
+  T,
+  ValueTypeFilter<T, ValueType, true>
+>;
+
+type OmitByValueType1<T extends object, ValueType> = Pick<
+  T,
+  ValueTypeFilter<T, ValueType, false>
+>;
