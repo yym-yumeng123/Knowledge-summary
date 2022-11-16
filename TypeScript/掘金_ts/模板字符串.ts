@@ -33,3 +33,27 @@ type Size = "Small" | "Middle" | "Large"
 
 // "Small-Record" | "Middle-Record" | "Huge-Record"
 type UnionSizeRecord = SizeRecord<Size>
+
+interface Foo {
+  name: string
+  age: number
+  job: "job"
+}
+
+type ChangeListener = {
+  on: (change: `${keyof Foo}Changed`) => void
+}
+
+declare let listener: ChangeListener
+
+listener.on('jobChanged')
+
+type Copy<T extends object> = {
+  [K in keyof T]: T[K]
+}
+
+type CopyWithRename<T extends object> = {
+  [K in keyof T as `modified_${string & K}`]: T[K]
+}
+
+type CopyFoo = CopyWithRename<Foo>
