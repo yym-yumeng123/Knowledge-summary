@@ -46,7 +46,7 @@ type ChangeListener = {
 
 declare let listener: ChangeListener
 
-listener.on('jobChanged')
+listener.on("jobChanged")
 
 type Copy<T extends object> = {
   [K in keyof T]: T[K]
@@ -57,3 +57,26 @@ type CopyWithRename<T extends object> = {
 }
 
 type CopyFoo = CopyWithRename<Foo>
+
+type Heavy<T extends string> = `${Uppercase<T>}`
+type Respect<T extends string> = `${Capitalize<T>}`
+
+type HeavyName = Heavy<"linbudu"> // "LINBUDU"
+type RespectName = Respect<"linbudu"> // "Linbudu"
+
+type ReverseName<Str extends string> =
+  Str extends `${infer First} ${infer Last}`
+    ? `${Capitalize<Last>} ${First}`
+    : Str
+
+type ReversedTomHardy = ReverseName<"Tom hardy"> // "Hardy Tom"
+type ReversedLinbudu = ReverseName<"Budu Lin"> // "Lin Budu"
+
+
+declare function handler<Str extends string>(arg: `Guess who is ${Str}`) : Str 
+handler(`Guess who is Linbudu`); // "Linbudu"
+handler(`Guess who is `); // ""
+handler(`Guess who is  `); // " "
+
+handler(`Guess who was`); // Error
+handler(``); // Error
