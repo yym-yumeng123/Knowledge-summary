@@ -3,26 +3,16 @@ const HtmlWebpackPlugins = require("html-webpack-plugin")
 
 module.exports = {
   mode: "development",
-  entry: {
-    index: {
-      import: "./src/index.js",
-      dependOn: "shared",
-    },
-    another: {
-      import: "./src/another-module.js",
-      dependOn: "shared",
-    },
-    shared: "lodash",
-  },
+  entry: "./src/index.js",
   output: {
-    filename: "[name].bundle.js",
+    filename: "[name].[contenthash].js",
     path: path.resolve(__dirname, "dist"),
     clean: true,
   },
   devtool: "inline-source-map",
   plugins: [
     new HtmlWebpackPlugins({
-      title: "Development",
+      title: "Caching",
     }),
   ],
   // module: {
@@ -76,7 +66,13 @@ module.exports = {
   optimization: {
     runtimeChunk: "single",
     splitChunks: {
-      chunks: "all",
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all",
+        },
+      },
     },
   },
 }
