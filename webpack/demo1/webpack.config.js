@@ -12,9 +12,10 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     clean: true
   },
+  devtool: 'inline-source-map',
   plugins: [
     new HtmlWebpackPlugins({
-      title: '管理输出'
+      title: 'Development'
     })
   ],
   // module: {
@@ -62,4 +63,10 @@ module.exports = {
   //     },
   //   ],
   // },
+  devServer: {
+    static: './dist'
+  },
+  optimization: {
+    runtimeChunk: 'single',
+  },
 }
