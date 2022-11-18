@@ -62,17 +62,9 @@ module.exports = {
   // },
   devServer: {
     static: "./dist",
+    hot: true,
   },
   optimization: {
-    runtimeChunk: "single",
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: "vendors",
-          chunks: "all",
-        },
-      },
-    },
+    usedExports: true,
   },
 }
