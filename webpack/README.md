@@ -33,3 +33,17 @@ development(开发环境) 和 production(生产环境) 这两个环境下的构�
 ### ECMAScript 模块
 
 Node.js 通过设置 package.json 中的属性来显式设置文件模块类型。 在 package.json 中设置 "type": "module" 会强制 package.json 下的所有文件使用 ECMAScript 模块。 设置 "type": "commonjs" 将会强制使用 CommonJS 模块。
+
+### 配置
+
+webpack 开箱即用, 无需使用任何配置文件, 然而, webpack 会假设项目的入口起点为 `src/index.js`, 然后会在 `dist/main.js` 输出结果
+
+### 使用不同的配置文件
+
+出于某些原因, 需要根据特定情况使用不同的配置文件, 在命令行中使用 `--config` 标志修改
+
+```js
+"scripts": {
+  "build": "webpack --config prod.config.js"
+}
+```
