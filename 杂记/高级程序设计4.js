@@ -74,3 +74,11 @@ console.log(o)
 // Symbol(baz): baz val, Symbol(qux): qux val}
 
 Reflect.ownKeys()
+
+console.log(!false)
+
+Math.pow(3, 2)
+3 ** 2
+
+console.log(Math.pow(16, 0.5))
+console.log(16 ** 0.5)
