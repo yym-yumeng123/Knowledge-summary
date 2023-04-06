@@ -82,3 +82,40 @@ Math.pow(3, 2)
 
 console.log(Math.pow(16, 0.5))
 console.log(16 ** 0.5)
+
+for (const propName in window) {
+  document.write(propName)
+}
+
+for (const key in object) {
+  if (Object.hasOwnProperty.call(object, key)) {
+    const element = object[key]
+  }
+}
+
+for (const el of [2, 4, 6, 8]) {
+  document.write(el)
+}
+
+start: for (let i = 0; i < count; i++) {
+  console.log(i)
+}
+
+let num = 0
+for (let i = 1; i < 10; i++) {
+  if (i % 5 == 0) {
+    break
+  }
+  num++
+}
+
+console.log("num", num)
+
+let num1 = 0
+for (let i = 1; i < 10; i++) {
+  if (i % 5 == 0) {
+    continue
+  }
+  num1++
+}
+console.log(num1) // 8
