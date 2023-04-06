@@ -119,3 +119,37 @@ for (let i = 1; i < 10; i++) {
   num1++
 }
 console.log(num1) // 8
+
+let person = new Person()
+person.name = "Nico"
+console.log("person.name", person.name)
+
+let obj1 = new Object()
+let obj2 = obj1
+obj1.name = "nic"
+console.log(obj2.name)
+
+function addTen(num) {
+  num += 10
+  return num
+}
+let count = 20
+let result = addTen(count)
+console.log(count) // 20，没有变化
+console.log(result) // 30
+
+function setName(obj) {
+  obj.name = "Nicholas"
+}
+let person = new Object()
+setName(person)
+console.log(person.name) // "Nicholas"
+
+function setName(obj) {
+  obj.name = "Nicholas"
+  obj = new Object()
+  obj.name = "Greg"
+}
+let person = new Object()
+setName(person)
+console.log(person.name) // "Nicholas"
