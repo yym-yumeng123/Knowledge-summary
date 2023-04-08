@@ -179,3 +179,51 @@ function changeColor() {
 }
 // 这里只能访问 color
 changeColor()
+
+function displayInfo(args) {
+  let output = ""
+
+  if (typeof args.name === "string") {
+    output += "Name: " + args.name + "\n"
+  }
+
+  if (typeof args.age == "number") {
+    output += "Age: " + args.age + "\n"
+  }
+
+  alert(output)
+}
+
+displayInfo({
+  name: "Nicholas",
+  age: 29,
+})
+displayInfo({
+  name: "Greg",
+})
+
+console.log(Array.from("Matt"))
+
+const m = new Map().set(1, 2).set(3, 4)
+const s = new Set().add(1).add(2).add(3).add(4)
+
+const a1 = [1, 2, 3, 4]
+const a2 = Array.from(a1, (x) => x ** 2)
+const a3 = Array.from(
+  a1,
+  function (x) {
+    return x ** this.exponent
+  },
+  { exponent: 2 }
+)
+console.log(a2) // [1, 4, 9, 16]
+console.log(a3) // [1, 4, 9, 16]
+
+const options = [1, , , , 5]
+for (const option of options) {
+  console.log("option", option === undefined)
+}
+
+let values = [1, 2, 3, 4, 5]
+
+let sum = values.reduce((prev, current, index, array) => prev + current, 10)
