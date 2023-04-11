@@ -227,3 +227,13 @@ for (const option of options) {
 let values = [1, 2, 3, 4, 5]
 
 let sum = values.reduce((prev, current, index, array) => prev + current, 10)
+
+const m1 = new Map([
+  ["key1", "val1"],
+  ["key2", "val2"],
+  ["key3", "val3"],
+])
+
+m1.has('key1')
+m1.has('key4')
+m1.get('key2')
