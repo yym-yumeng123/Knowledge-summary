@@ -305,3 +305,11 @@ const User = (() => {
   }
   return User
 })()
+
+const m11 = new Set()
+
+const s11 = new Set(["v1", "v2", "v3"])
+
+for (const value of s11.values()) {
+  console.log(value, "value")
+}
