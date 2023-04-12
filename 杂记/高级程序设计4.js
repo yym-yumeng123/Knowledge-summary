@@ -234,6 +234,74 @@ const m1 = new Map([
   ["key3", "val3"],
 ])
 
-m1.has('key1')
-m1.has('key4')
-m1.get('key2')
+m1.has("key1")
+m1.has("key4")
+m1.get("key2")
+
+m1.entries === m[Symbol.iterator]
+
+const wm = new WeakMap()
+
+const key1 = { id: 1 },
+  key2 = { id: 2 },
+  key3 = { id: 3 }
+
+const wm1 = new WeakMap([
+  [key1, "val1"],
+  [key2, "val2"],
+  [key3, "val3"],
+])
+
+class User {
+  constrouctor(id) {
+    this.idProperty = Symbol("id")
+    this.setId(id)
+  }
+
+  setPrivate(property, value) {
+    const privateMembers = wm.get(this) || {}
+    privateMembers[property] = value
+    wm.set(this, privateMembers)
+  }
+  getPrivate(property) {
+    return wm.get(this)[property]
+  }
+  setId(id) {
+    this.setPrivate(this.idProperty, id)
+  }
+  getId() {
+    return this.getPrivate(this.idProperty)
+  }
+}
+
+const user = new User(123)
+alert(user.getId()) // 123
+user.setId(456)
+alert(user.getId()) // 456
+// 并不是真正私有的
+alert(wm.get(user)[user.idProperty]) // 456
+
+const User = (() => {
+  const wm = new WeakMap()
+  class User {
+    constructor(id) {
+      this.idProperty = Symbol("id")
+      this.setId(id)
+    }
+    setPrivate(property, value) {
+      const privateMembers = wm.get(this) || {}
+      privateMembers[property] = value
+      wm.set(this, privateMembers)
+    }
+    getPrivate(property) {
+      return wm.get(this)[property]
+    }
+    setId(id) {
+      this.setPrivate(this.idProperty, id)
+    }
+    getId(id) {
+      return this.getPrivate(this.idProperty)
+    }
+  }
+  return User
+})()
