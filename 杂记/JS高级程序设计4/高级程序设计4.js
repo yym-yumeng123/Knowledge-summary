@@ -313,3 +313,47 @@ const s11 = new Set(["v1", "v2", "v3"])
 for (const value of s11.values()) {
   console.log(value, "value")
 }
+
+for (let index = 0; index < array.length; index++) {
+  console.log("index", index)
+}
+
+let num11 = 1
+let obj = {}
+
+console.log("num11[Symbol.iterator]", num11[Symbol.iterator])
+
+class Foo {
+  [Symbol.iterator]() {
+    return {
+      next() {
+        return { done: false, value: "foo" }
+      },
+    }
+  }
+}
+
+class Counter {
+  constructor(limit) {
+    this.limit = limit
+  }
+  [Symbol.iterator]() {
+    let count = 1,
+      limit = this.limit
+    return {
+      next() {
+        if (count <= limit) {
+          return { done: false, value: count++ }
+        } else {
+          return { done: true, value: undefined }
+        }
+      },
+    }
+  }
+}
+
+let counter = new Counter(3)
+
+for (const i of counter) {
+  console.log("i", i)
+}
