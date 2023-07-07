@@ -357,3 +357,38 @@ let counter = new Counter(3)
 for (const i of counter) {
   console.log("i", i)
 }
+
+// 生成器函数声明
+function* generatorFn() {}
+// 生成器函数表达式
+let generatorFn = function* () {}
+// 作为对象字面量
+let foo = {
+  *generatorFn() {},
+}
+// 作为类实例方法
+class Foo {
+  *generatorFn() {}
+}
+// 作为类静态方法的生成器函数
+class Bar {
+  static *generatorFn() {}
+}
+
+const g = generatorFn()
+console.log("g", g)
+console.log("g.next", g.next)
+
+class Foo {
+  constructor() {
+    this.values = [1, 2, 3]
+  }
+  *[Symbol.iterator]() {
+    yield* this.values
+  }
+}
+
+const f = new Foo()
+for (const x of f) {
+  console.log(x)
+}
