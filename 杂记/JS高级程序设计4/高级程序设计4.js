@@ -392,3 +392,93 @@ const f = new Foo()
 for (const x of f) {
   console.log(x)
 }
+
+let person = new Object()
+person.name = "yym"
+person.age = 18
+person.job = "engineer"
+person.sayNmae = function () {
+  console.log("this.name", this.name)
+}
+
+let person = {}
+Object.defineProperty(person, "name", {
+  writable: false, // 只读
+  configurable: false, // 不能从对象上删除
+  value: "yym",
+})
+console.log("person.name", person.name)
+person.name = "zhangsan"
+console.log("person.name", person.name)
+delete person.name
+console.log("person.name", person.name)
+
+let book = {
+  year_: 2017,
+  edition: 1,
+}
+
+Object.defineProperty(book, "year", {
+  get() {
+    return this.year_
+  },
+  set(newValue) {
+    if (newValue > 2017) {
+      this.year_ = newValue
+      this.edition += newValue - 2017
+    }
+  },
+})
+
+book.year = 2018
+console.log("book.edition", book.edition)
+
+let book = {}
+Object.defineProperties(book, {
+  year_: {
+    value: 2017,
+  },
+  edition: {
+    value: 1,
+  },
+
+  year: {
+    get() {
+      return this.year_
+    },
+    set(newValue) {
+      if (newValue > 2017) {
+        this.year_ = newValue
+        this.edition += newValue - 2017
+      }
+    },
+  },
+})
+let descriptor = Object.getOwnPropertyDescriptor(book, "year_")
+console.log("descriptor.value", descriptor.value) // 2017
+console.log("descriptor.configurable", descriptor.configurable)
+console.log(typeof descriptor.get) // "undefined"
+let descriptor1 = Object.getOwnPropertyDescriptor(book, "year")
+console.log(descriptor1.value) // undefined
+console.log(descriptor1.enumerable) // false
+console.log(typeof descriptor1.get) // "function"
+
+let dest, src, result1
+dest = {}
+src = { id: "1" }
+result1 = Object.assign(dest, src)
+
+function recursivelyCheckEqual(x, ...rest) {
+  return (
+    Object.is(x, rest[0]) && (rest.length < 2 || recursivelyCheckEqual(...rest))
+  )
+}
+
+const nameKey = "name"
+const ageKey = "age"
+const jobKey = "job"
+
+let person = {}
+person[nameKey] = "Matt"
+person[ageKey] = 27
+person[jobKey] = "Software engineer"
