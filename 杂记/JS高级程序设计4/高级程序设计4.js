@@ -482,3 +482,33 @@ let person = {}
 person[nameKey] = "Matt"
 person[ageKey] = 27
 person[jobKey] = "Software engineer"
+
+function createPerson(name, age, job) {
+  let o = new Object()
+  o.name = name
+  o.age = age
+  o.job = job
+  o.sayNmae = function () {
+    console.log("this.name", this.name)
+  }
+
+  return o
+}
+
+let person1 = createPerson("yym", 18, "soft")
+let person2 = createPerson("yym1", 20, "soft1")
+
+function Person(name, age, job) {
+  this.name = name
+  this.age = age
+  this.job = job
+  this.sayNmae = function () {
+    console.log("this.name", this.name)
+  }
+}
+
+let person3 = new Person('yym', 18, 'soft')
+let person4 = new Person('yym', 128, 'soft1')
+
+person3.sayNmae()
+person4.sayNmae()
