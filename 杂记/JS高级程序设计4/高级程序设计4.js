@@ -507,8 +507,33 @@ function Person(name, age, job) {
   }
 }
 
-let person3 = new Person('yym', 18, 'soft')
-let person4 = new Person('yym', 128, 'soft1')
+let person3 = new Person("yym", 18, "soft")
+let person4 = new Person("yym", 128, "soft1")
 
 person3.sayNmae()
 person4.sayNmae()
+
+function Perosn() {}
+Person.prototype.name = "yym"
+Person.prototype.age = 29
+Person.prototype.job = "Software Engineer"
+Person.prototype.sayName = function () {
+  console.log(this.name)
+}
+
+let person5 = new Person()
+person5.sayName()
+
+/**
+ * 构造函数可以是函数表达式
+ * 也可以是函数声明
+ * function Person(){}
+ * let Person = function() {}
+ */
+function Person() {}
+
+person1.name = 'Grey'
+
+function hasPrototypeProperty(object, name) {
+  return !object.hasOwnProperty(name) && (name in object)
+}
