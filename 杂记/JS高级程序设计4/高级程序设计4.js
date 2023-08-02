@@ -537,3 +537,15 @@ person1.name = 'Grey'
 function hasPrototypeProperty(object, name) {
   return !object.hasOwnProperty(name) && (name in object)
 }
+
+const o1 = {
+  foo: 'baz',
+  baz: 1,
+  qux: {}
+}
+
+Object.values(o1)
+
+Person.prototype = {
+  name: 'yynm'
+}
