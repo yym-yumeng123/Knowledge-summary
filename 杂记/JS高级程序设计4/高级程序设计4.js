@@ -532,20 +532,57 @@ person5.sayName()
  */
 function Person() {}
 
-person1.name = 'Grey'
+person1.name = "Grey"
 
 function hasPrototypeProperty(object, name) {
-  return !object.hasOwnProperty(name) && (name in object)
+  return !object.hasOwnProperty(name) && name in object
 }
 
 const o1 = {
-  foo: 'baz',
+  foo: "baz",
   baz: 1,
-  qux: {}
+  qux: {},
 }
 
 Object.values(o1)
 
 Person.prototype = {
-  name: 'yynm'
+  name: "yynm",
 }
+
+function SuperType() {
+  this.property = true
+}
+
+SuperType.prototype.getSuperValue = function () {
+  return this.property
+}
+
+function SubType() {
+  this.subproperty = false
+}
+
+SubType.property = new SuperType()
+SubType.property.getSubValue = function () {
+  return this.subproperty
+}
+
+let instance = new SubType()
+console.log("instance.getSuperValue()", instance.getSuperValue())
+
+function SuperType(name) {
+  this.name = name
+}
+
+function SubType() {
+  // 继承 SuperType 并传参
+  SuperType.call(this, 'yym')
+  // 实例属性
+  this.age = 18
+}
+
+let instance1 = new SubType()
+instance1.colors.push("black")
+console.log(instance1.colors) // "red,blue,green,black"
+let instance2 = new SubType()
+console.log(instance2.colors) // "red,blue,green"
