@@ -630,3 +630,35 @@ let person = {
 }
 let anotherPerson = createAnother(person)
 anotherPerson.sayHi() // "hi
+
+class Animal {}
+class Person {
+  constructor(name) {
+    console.log(arguments.length)
+    this.name = name || null
+  }
+}
+class Vegetable {
+  constructor() {
+    this.color = "orange"
+  }
+}
+
+let a11 = new Animal()
+let p1 = new Person()
+console.log("p1.name", p1.name) // null
+let p2 = new Person()
+console.log("p2.name", p2.name) // null
+let p3 = new Person("yym")
+console.log("p3.name", p3.name) // yym
+
+let v = new Vegetable()
+console.log("v.color", v.color)
+
+let classList = [
+  class {
+    constructor(id) {
+      this.id = id
+    }
+  },
+]
