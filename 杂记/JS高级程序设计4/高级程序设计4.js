@@ -664,7 +664,7 @@ let classList = [
 ]
 
 class Person {
-  constrouctor() {
+  constructor() {
     // 先试用对象包装类型定义一个字符串, 测试两个对象的相等性
     this.name = new String("Jack")
     this.sayName = () => console.log("this.name", this.name)
@@ -680,3 +680,47 @@ let p11 = new Person(),
 
 p1.sayName() // Jack
 p2.sayName() // jack
+
+class Vehicle {
+  constructor() {
+    this.hasEngine = true
+  }
+  static identity() {
+    console.log("ve")
+  }
+}
+// 继承类
+class Bus extends Vehicle {
+  constructor() {
+    super() // 相当于 super.constructor()
+
+    console.log(tihs instanceof Vehicle) // true
+    console.log(this) // Bus
+  }
+  static identity() {
+    super.identity()
+  }
+}
+
+let b1 = new Bus()
+b1 instanceof Bus // true
+b1 instanceof Vehicle //true
+
+function Person() {}
+// 继承普通构造函数
+class Engineer extends Perosn {}
+let e = new Engineer()
+console.log(e instanceof Engineer) // true
+console.log(e instanceof Person) // true
+
+class Vehicle {
+  constructor() {
+    console.log("new.target", new.target)
+    if (new.target === Vehicle) {
+      throw new Error('Vehicle cannot be directly instantiated')
+    }
+  }
+}
+
+class Bus extends Vehicle {}
+new Bus()
