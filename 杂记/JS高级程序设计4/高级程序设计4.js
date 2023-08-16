@@ -662,3 +662,21 @@ let classList = [
     }
   },
 ]
+
+class Person {
+  constrouctor() {
+    // 先试用对象包装类型定义一个字符串, 测试两个对象的相等性
+    this.name = new String("Jack")
+    this.sayName = () => console.log("this.name", this.name)
+    this.nicknames = ["jack", "J-Dog"]
+    this.locate = console.log("instance")
+  }
+  locate() {
+    console.log("prototype")
+  }
+}
+let p11 = new Person(),
+  p22 = new Person()
+
+p1.sayName() // Jack
+p2.sayName() // jack
