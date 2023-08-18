@@ -29,3 +29,21 @@ function doAdd(num1, num2) {
     console.log(arguments[0] + num2)
   }
 }
+
+function makeKing(name = "Henry") {
+  return `king ${name} VILL`
+}
+
+let romanNumerals = ["I", "II", "III", "IV", "V", "VI"]
+let ordinality = 0
+
+let values = [1, 2, 3, 4]
+function getSum() {
+  let sum = 0
+  for (let i = 0; i < arguments.length; i++) {
+    sum += arguments[i]
+  }
+  return sum
+}
+
+console.log(getSum.apply(null, values))
