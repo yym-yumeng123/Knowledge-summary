@@ -47,3 +47,19 @@ function getSum() {
 }
 
 console.log(getSum.apply(null, values))
+
+function factories(num) {
+  if (num <= 1) {
+    return 1
+  } else {
+    return num * factories(num - 1)
+  }
+}
+
+function factories(num) {
+  if (num <= 1) {
+    return 1
+  } else {
+    return num * arguments.callee(num - 1)
+  }
+}
