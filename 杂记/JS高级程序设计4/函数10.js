@@ -56,10 +56,18 @@ function factories(num) {
   }
 }
 
-function factories(num) {
+function factorial(num) {
   if (num <= 1) {
     return 1
   } else {
     return num * arguments.callee(num - 1)
+  }
+}
+
+const factorial = function f(num) {
+  if (num <= 1) {
+    return 1
+  } else {
+    return num * f(num - 1)
   }
 }
