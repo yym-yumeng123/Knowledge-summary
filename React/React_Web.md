@@ -209,3 +209,97 @@ const KanbanCard = ({title}) => (
 
 ### 前端组件化: 如何拆分成 React 组件?
 
+1. 为什么组件化?
+
+组件是对视图以及与视图相关的逻辑 数据 交互等的封装.
+
+比组件化更进一步 组件层次结构(Hierarchy)
+
+- 将前端应用需要承担的业务和技术复杂度分摊到多个组件中去，并把这些组件拼装在一起
+
+2. 用 JSX 协助拆分 React 组件
+
+可以用 JSX 来快速验证拆分出来的组件层次结构
+
+props 中都有一个叫 children 的属性，这个属性一般不需要显式地传值，只要在 JSX 中写这个组件的标签时,在闭合标签内部加入子元素即可，子元素会自动作为 children 传给标签对应的组件
+
+真·子组件（Sub-components）的设计模式
+
+
+3. 拆分组件的基本原则
+
+- 单一职责
+- 关注点分离
+- 一次且仅一次 (Don't Repeat Yourself)
+- 简约
+
+4. 对 React 子组件概念的澄清
+
+React 没有组件树（Component Tree），只有元素树（Element Tree），即从根元素开始，父元素子元素之间形成的树
+
+从组件声明层面: 在一个组件返回的 JSX 中，加入另一个组件作为子元素，那么可以说前者是父组件，后者是子组件。父子组件形成的树即为组件树
+
+从组件实例层面: 组件树是来自运行时的 React 元素树、从逻辑上排除掉 HTML、Fragment 等元素，仅保留对应 React 组件的元素节点而形成的精简树
+
+
+### 虚拟DOM
+
+虚拟DOM (Virtual DOM), 是相对于 HTML DOM 更轻量的 JS 模型, 
+
+操作真实DOM是比较耗费资源的, 大量调用 DOM API 绘制页面，页面很容易就卡
+
+React 的声明式 API，在此基础上，每次有 props、state 等数据变动时，组件会渲染出新的元素树，React 框架会与之前的树做 Diffing 对比，将元素的变动最终体现在浏览器页面的 DOM 中。这一过程就称为`协调（Reconciliation）`
+
+1. Diffing 算法
+
+- 从根元素开始, 递归对比两棵树的根元素和子元素
+- 对比不同类型的元素, 比如对比 html 和 React组件元素, React 会直接清理旧的元素和子树, 建立新的树
+- 对比同为HTML元素, 但 Tag 不同的元素, 如从 `<a>` 变为 `<div>`, React 会直接清理旧的元素和子树，然后建立新的树
+- 对比同为 React 组件元素 ,但组件类或组件函数不同的元素，如从 KanbanNewCard 变成 KanbanCard ，React 会卸载旧的元素和子树，然后挂载新的元素树
+- 对比Tag相同的HTML元素, 如  `<input type="text" value="old" />` 和 `<input type="text" value="new" />` React 保留该元素, 并记录有改变的属性, 在之前, old => new
+- 对比组件类或组件函数相同的组件元素, 如 `<KanbanCard title="老卡片" />` 和 `<KanbanCard title="新卡片" />`, React会保留组件实例, 更新props, 出发组件的声明周期或者hoks
+
+强调: 对比两棵树对应节点的子元素时，如果子元素形成一个列表，那么 React 会按顺序尝试匹配新旧两个列表的元素
+
+React 引入了 key 这个特殊属性，当有子元素列表中的元素有这个属性时，React 会利用这个 key 属性值来匹配新旧列表中的元素，以减少插入元素时的性能损耗
+
+2. 触发协调的场景
+
+- props 从组件外面传进来 不可变(immutable)
+- state 活跃在组件内部 不可变(immutable)
+- context 组件外面的 Context.Provider 提供数据，组件内部则可以消费 context 数据
+
+3. 什么是 Fiber 协调引擎
+
+在React早期版本, 协调是一个`同步过程`, 意味着当虚拟 DOM 足够复杂，或者元素渲染时产生的各种计算足够重，协调过程本身就可能超过 16ms，严重的会导致页面卡顿
+
+Reactv16 开始, 协调从之前的同步改成了 `异步过程`, 得益于 Fiber 协调引擎, 在 React 中更贴近虚拟 DOM 的，是在 Fiber 协调引擎中的`核心模型 FiberNode`
+
+FiberNode 依靠对元素到子元素的双向链表, 子元素到子元素的单向链表实现了一棵树, 这棵树可以随时暂停并回复渲染, 触发组件声明周期等副作用(Side-effect), 并将中间结果分散保存在每一个节点上, 不会 block 浏览器的其他工作
+
+
+### CSS-in-JS
+
+1. Emotion
+2. Styled-components
+3. CSS Modules
+
+
+### 组件声明周期, 新老版本演化
+
+1. 类组件声明周期方法
+
+一个类组件声明周期包含 挂载(Mounting) 更新(Updating) 卸载(Unmounting) 错误处理(Error Handing)
+
+错误处理: `getDerivedStateFromError` `componentDidCatch`, 错误边界(Error Boundary), 如果当前组件不是错误边界, React会去找父组件, 父组件没有,继续往上, 知道根组件, 谁都没有, 应用就挂了, 截止到 Reactv18.2.0, 只有类组件才能称为错误边界, 函数组件不行  
+
+2. 用 Hooks 定义函数组件声明周期
+
+- 挂载阶段, React会执行组件函数, 在函数执行过程中遇到`useState useMemo`等Hooks依次挂载到 FiberNode, useEffect其实也会被挂载, 但它的副作用会保留到提交阶段
+- 更新阶段. 当组件接收新的 props, 调用 `useState`返回的setter或者 `useReducer` 返回的 `dispatch` 修改了状态, 组件就进入更新阶段, 函数本身会被再次执行,组件函数的返回值用来更新 FiberNode 树
+- 卸载阶段, 主要执行Effect的清除函数
+
+
+函数组件也有错误处理阶段，但没有对应的生命周期 Hooks，错误处理依赖于父组件或祖先组件提供的错误边界。
+
+### React Hooks
