@@ -1,5 +1,7 @@
 > React 函数组件中, 每一次 UI 的变化, 都是通过执行整个函数来完成的
 
+> 函数组件: 当某个状态发生变化时, 我要做什么
+
 ### Hooks 优点
 
 - 逻辑复用
@@ -193,22 +195,133 @@ Context 提供了一个方便在多个组件之间共享数据的机制
 
 ```js
 // 1. 先创建一个上下文
-const MyContext = React.createContext(initialValue);
-
+const MyContext = React.createContext(initialValue)
 
 // 2. Context.Provider 作为根组件
 // 创建一个 Theme 的 Context
-const ThemeContext = React.createContext(themes.light);
+const ThemeContext = React.createContext(themes.light)
 function App() {
   // 整个应用使用 ThemeContext.Provider 作为根组件
   return (
-    // 使用 themes.dark 作为当前 Context 
+    // 使用 themes.dark 作为当前 Context
     <ThemeContext.Provider value={themes.dark}>
       <Toolbar />
     </ThemeContext.Provider>
-  );
+  )
 }
 
 // 3. 消费上下文
-const value = useContext(MyContext);
+const value = useContext(MyContext)
+```
+
+### Hooks 使用场景
+
+自定义 Hooks: 声明一个名字以 `use 开头`的函数，比如 useCounter。这个函数在形式上和普通的 JavaScript 函数没有任何区别，你可以传递任意参数给这个 Hook，也可以返回任何值。
+
+- 名字一定以 use 开头的函数
+- 函数内部一定调用了其它的 Hooks, 可以是内置 Hooks, 也可以是其它自定义 Hooks.
+
+1. 封装通用逻辑: useAsync: 发起异步请求获取数据并显示在界面上
+
+```js
+import { useState } from 'react';
+
+const useAsync = (asyncFunction) => {
+  // 设置三个异步逻辑相关的 state
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  // 定义一个 callback 用于执行异步逻辑
+  const execute = useCallback(() => {
+    // 请求开始时，设置 loading 为 true，清除已有数据和 error 状态
+    setLoading(true);
+    setData(null);
+    setError(null);
+    return asyncFunction()
+      .then((response) => {
+        // 请求成功时，将数据写进 state，设置 loading 为 false
+        setData(response);
+        setLoading(false);
+      })
+      .catch((error) => {
+        // 请求失败时，设置 loading 为 false，并设置错误状态
+        setError(error);
+        setLoading(false);
+      });
+  }, [asyncFunction]);
+
+  return { execute, loading, data, error };
+};
+
+export default function UserList() {
+  // 通过 useAsync 这个函数，只需要提供异步逻辑的实现
+  const {
+    execute: fetchUsers,
+    data: users,
+    loading,
+    error,
+  } = useAsync(async () => {
+    const res = await fetch("https://reqres.in/api/users/");
+    const json = await res.json();
+    return json.data;
+  });
+
+  return (
+    // 根据状态渲染 UI...
+  );
+}
+```
+
+2. 监听浏览器状态: useScroll
+
+```js
+import { useState, useEffect } from "react"
+
+// 获取横向，纵向滚动条位置
+const getPosition = () => {
+  return {
+    x: document.body.scrollLeft,
+    y: document.body.scrollTop,
+  }
+}
+const useScroll = () => {
+  // 定一个 position 这个 state 保存滚动条位置
+  const [position, setPosition] = useState(getPosition())
+  useEffect(() => {
+    const handler = () => {
+      setPosition(getPosition(document))
+    }
+    // 监听 scroll 事件，更新滚动条位置
+    document.addEventListener("scroll", handler)
+    return () => {
+      // 组件销毁时，取消事件监听
+      document.removeEventListener("scroll", handler)
+    }
+  }, [])
+  return position
+}
+
+function ScrollTop() {
+  const { y } = useScroll()
+
+  const goTop = useCallback(() => {
+    document.body.scrollTop = 0
+  }, [])
+
+  const style = {
+    position: "fixed",
+    right: "10px",
+    bottom: "10px",
+  }
+  // 当滚动条位置纵向超过 300 时，显示返回顶部按钮
+  if (y > 300) {
+    return (
+      <button onClick={goTop} style={style}>
+        Back to Top
+      </button>
+    )
+  }
+  // 否则不 render 任何 UI
+  return null
+}
 ```
