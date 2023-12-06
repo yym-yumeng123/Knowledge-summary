@@ -63,6 +63,11 @@ useEffect(() => {
 
 ### useCallback 缓存回调函数
 
+关于事件处理函数, 是否需要 useCallback 进行封装?
+
+- 对于原生的 DOM 节点，比如 button、input 等，我们是不用担心重新渲染的, 不写 useCallback, 也不会有影响
+- 使用自定义组件, 回调函数应用到用 useCallback 封装
+
 ```jsx
 function Counter() {
   const [count, setCount] = useState(0)
