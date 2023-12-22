@@ -35,6 +35,11 @@
   - `text-align: justify` 换行的两边对齐
 - 多个 inline-block 元素之间有空格, 尽量不用 inline-block
 - 内联元素足够多, 一行放不下,会自动换行, 文档流
+- `div 的高度是由内部文档流中元素的总和决定的`
+- `文档流`文档流中的内联元素会从左到右并列排成一行, 空间不够, 会换行一次排列; 块级元素从上到下
+- `脱离文档流`
+  - float 浮动
+  - position: absolute | fixed
 
 ```html
 <!-- div没有内容, 没有高度 -->
@@ -63,3 +68,55 @@ word-break: break-all;
 <span>姓名</span>
 <span>联系方式</span>
 ```
+
+#### 多行文字溢出
+
+```css
+/* 一行文本 */
+div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 多行文本 */
+div {
+  display: --webkit-box;
+  --webkit-line-clamp: 2; // 两行
+  --webkit-box-orient:vertical;
+  overflow: hidden;
+}
+```
+
+#### 文字垂直居中
+
+- padding: 10px 0;, 不要定死高度
+
+
+#### margin合并
+
+父元素有没有border或者有一些属性能够挡住父元素, 子元素的 margin 会不会和父元素合并
+
+- 父子元素之间有没有什么属性能挡住一下, 决定 margin 是否合并
+- 父元素下面既有行内元素, 又有块级元素, 内联元素挡在中间,也会解决margin 合并
+
+
+#### 堆叠上下文
+
+满足某种条件的div或某种元素, 堆叠上下文
+
+- 根元素(html)
+- z-index != auto 的绝对/相对定位
+- opacity 值 < 1 的
+- podtion: fixed
+
+div 不是平面的,三维概念, 最下到最上层 (在浏览器通过颜色, 位置调试)
+
+1. background
+2. border
+3. 块级元素
+4. 浮动
+5. 内联
+6. z-index: 0
+7. z-index: +
+8. 兄弟元素重叠, 后面的盖在前面的身上
