@@ -1,5 +1,5 @@
 /**
- * ! API: .on(name, fn) .emit(name, fn) .off(name)
+ * ! API: .on(name, fn) .emit(name, data) .off(name)
  * @description 多个模块之间进行通信
  *
  * .on 订阅时: 我会把 name 作为 key 放进 cache: { name: }, 把事件推进 cache: {name: [fn, ...]}
@@ -7,16 +7,13 @@
  */
 
 class EventHub {
-  /**
-   * {'click': [fn1, fn2, ...], 'mouse': [fn3, fn4, ...]}
-   */
+  // {'click': [fn1, fn2, ...], 'mouse': [fn3, fn4, ...]}
   cache = {}
 
-  constructor() {}
   /**
-   *
+   * 监听/注册
    * @param {我想接受什么东西} eventName
-   * @param {接受这个东西干甚me} fn
+   * @param {接受这个东西干什么} fn
    */
   on(eventName, fn) {
     // 先看 cache 里面有没有 这个东西
@@ -36,7 +33,7 @@ class EventHub {
     const index = this.cache[eventName].indexOf(fn)
 
     if (index === -1) return
-    this.cache[eventName].splice(index, 1)
+    this.cache[eventName].splice(index, 1) // 删除
   }
 }
 

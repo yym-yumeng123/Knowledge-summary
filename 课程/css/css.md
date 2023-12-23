@@ -120,3 +120,22 @@ div 不是平面的,三维概念, 最下到最上层 (在浏览器通过颜色, 
 6. z-index: 0
 7. z-index: +
 8. 兄弟元素重叠, 后面的盖在前面的身上
+
+
+### icon 的各种做法
+
+1. 切图
+   1. photoshop 切图, 导出图层; Image/trim 图片; 导出png
+   2. 使用 `img 标签`
+2. `background icon`
+   1. `background: color url(./xx.png) no-repeat`
+   2. 雪碧图(css sprites): css sprite generator
+      1. `background-position: x y` 来定位图片里面小图片的位置; `overflow: hidden`
+3. iconfont-html
+   1. 原理: 把icon 替换成类似字体(设计)的东西, 打 苹果 出来苹果的icon, 做一个映射 
+   2. 使用 iconfont 这个软件
+   3. 或者使用伪类 .xxx:before{content: 'unicode'}
+4. svg icon: 使用 `svg` 画出的
+   1. svg 也可以在 iconfont 网站里面使用 svg 模式
+5. css 干 icon
+   1. 纯用 css 写样式

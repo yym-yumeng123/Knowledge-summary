@@ -91,7 +91,8 @@ function deepClone(source) {
       }
       cache.push([source, dist])
       for (const key in source) {
-        if (source.hasOwnproperty(key)) {
+        // 跳过原型属性
+        if (source.hasOwnProperty(key)) {
           dist[key] = deepClone(source[key])
         }
       }
