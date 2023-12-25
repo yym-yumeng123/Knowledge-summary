@@ -139,3 +139,29 @@ div 不是平面的,三维概念, 最下到最上层 (在浏览器通过颜色, 
    1. svg 也可以在 iconfont 网站里面使用 svg 模式
 5. css 干 icon
    1. 纯用 css 写样式
+
+
+### 移动端页面 (响应式)
+
+1. media query
+2. 和 UI 要设计图
+3. 学会隐藏元素
+4. `<meta name="viewport" content="width=device-width, user-scalable=no initial-scale=1.0">`
+5. 移动端的交互方式
+   1. 没有 hover
+   2. 有 touch 事件
+   3. 没有 resize
+   4. 没有滚动条
+
+
+```html
+<!-- media query -->
+<link href="xxx.css" media="(max-width: 300px)">
+<style>
+@media (max-width: 800px) {
+   body: {
+      background: red
+   }
+}
+</style>
+```
