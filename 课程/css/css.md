@@ -165,3 +165,53 @@ div 不是平面的,三维概念, 最下到最上层 (在浏览器通过颜色, 
 }
 </style>
 ```
+
+### flex
+
+#### flex 之前
+
+1. 文档流布局
+2. float + clear
+3. position relative + absolute
+4. display inline-block
+5. 负 margin
+
+#### flex 布局
+
+可以实现空间自动分配, 自动对齐 (flexible 弹性 灵活)
+
+flex 适用于线性布局, 一行
+
+- flex-direction: 'row' | 'column' | 'row-reverse' | 'column-reverse' 方向
+- flex-wrap: 'wrap' | 'nowrap' 换行
+- flex-flow 上面两个的简写
+- justify-content: 'center' | 'space-between' | 'space-around' | 'felx-start' | 'flex-end' 主轴方向的对齐方式
+- align-items: 'center' | 'stretch' | 'flex-start' | 'flex-end' | 'baseline'  侧轴对齐方式
+- align-content:  多行/列内容对齐方式
+
+```css
+/* 父元素 */
+dispaly: flex
+
+```
+
+空间自动分配
+
+- flex-grow: 增长比例(空间过多时)
+- flwx-shrink 收缩比例(空间不够时)
+- flex-basis 默认大小, 一般不写
+- flex 上面三个的缩写
+- order 改变的展示顺序
+- align-self 自身的对齐方式, 已经对齐的情况下, 自己选择自己的对齐方式
+
+flex-flow: column-reverse wrap;
+justify-content: center;
+align-content: space-between;
+
+
+### grid
+
+通过将CSS规则应用于父元素（成为网格容器）和该元素的子元素（网格元素），来使用网格布局。
+
+CSS网格布局（又名“网格”）是一个二维的基于网格的布局系统
+
