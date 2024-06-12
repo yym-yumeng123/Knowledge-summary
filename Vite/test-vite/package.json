@@ -1,0 +1,12 @@
+{
+  "name": "test-vite",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "vite": "^5.2.13"
+  }
+}
