@@ -126,3 +126,63 @@ yarn test # vite --mode test 测试环境 会将 mode 设置为 test 传递给 v
 // C:\Users\v_yymyyang\Desktop\yym_github\Knowledge-summary\Vite\test-vite
 
 ```
+
+### vite 处理 css 以及 css 模块化
+
+vite 默认支持对 css 文件的处理
+
+1. vite 读取 main.js 中引用了 index.css; 直接使用 fs 读取 index.css 文件内容
+2. 创建 style 标签, 将 index.css 的内容放到 style 标签中
+3. 将 style 标签插入到 index.html 的 head 中
+
+cssmodule
+
+```js
+// index.module.css style.module.css
+import styles from './index.module.css'
+console.log(styles)
+// calss: styles.footer
+```
+
+1. .module.css 是一种结尾约定的 css 模块化文件
+2. vite 会将 .module.css 文件转换为 css 模块化文件, 将类名转换为随机的类名, 将类名放到一个对象中, 将对象导出
+3. 创建一个映射对象, 将类名映射到对应的类名, 放入 style 标签中
+
+css module 配置
+
+```js
+import { defineConfig } from 'vite'
+export default defineConfig({
+  css: { // 对 css 的行为进行配置
+    // 配置 CSS modules 的行为。选项将被传递给 postcss-modules。
+    modules: { // 配置 css 模块化, 对 css 模块化默认行为进行覆盖
+      localsConvention: 'camelCase', // 'camelCase' | 'camelCaseOnly' | 'dashes' 中划线 | 'dashesOnly'  修改生成配置对象的key的展示形式
+      scopeBehaviour: 'local', // 'local' | 'global'  配置当前模块化行为是模块化还是全局化 local 默认代表开启模块化
+      generateScopedName: '[name]__[local]___[hash:base64:5]', // 生成的类名名字规则
+      hashPrefix: 'yym', // 希望生成的hash更加独特, 参与生成 hash
+      globalModulePaths: ['./src/assets/css/base.css'] // 配置全局 css 文件, 这些文件不会被模块化, 不想参与 css 模块化的路径
+    }
+  }
+})
+```
+
+css 配置流程 (preProcessorOptions) 指定传递给 CSS 预处理器的选项
+
+配置 css 预处理器 (less/scss/stylus) 的一些全局参数
+
+```js
+export default defineConfig({
+  css: { // 对 css 的行为进行配置
+    preprocessorOptions: { // 配置 css 预处理器 (less/scss/stylus) 的一些全局参数
+      less: {
+        modifyVars: { // 配置 less 变量
+          'primary-color': '#f00'
+        },
+        javascriptEnabled: true // 配置 less 启用 js 语法
+      }
+    }
+  }
+})
+```
+
+postcss: vite 默认使用 postcss 处理 css, 可以配置 postcss 的一些选项
