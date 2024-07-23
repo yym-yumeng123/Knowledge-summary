@@ -185,4 +185,8 @@ export default defineConfig({
 })
 ```
 
-postcss: vite 默认使用 postcss 处理 css, 可以配置 postcss 的一些选项
+postcss(后处理器): vite 默认使用 postcss 处理 css, 可以配置 postcss 的一些选项
+
+- 保证 css 执行起来万无一失, 在不同浏览器中执行效果一致, 对 css 进行兼容性处理
+- 前缀补全
+- 使用 postcss => `test-postcss` 文件夹
