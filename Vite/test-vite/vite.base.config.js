@@ -19,5 +19,13 @@ export default defineConfig({
       }
     },
     devSourcemap: true, // 开启 css 的 sourcemap, 开发环境开启, 生产环境关闭
+    postcss: {
+      plugins: [
+        require('postcss-preset-env')(),
+        require('autoprefixer')({
+          overrideBrowserslist: ['> 1%', 'last 2 versions']
+        })
+      ]
+    }
   }
 })

@@ -9,8 +9,10 @@
     "test": "vite --mode test"
   },
   "dependencies": {
+    "autoprefixer": "^10.4.19",
     "less": "^4.2.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "postcss-preset-env": "^9.6.0"
   },
   "devDependencies": {
     "vite": "^5.2.13"
