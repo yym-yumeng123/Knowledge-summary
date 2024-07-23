@@ -197,3 +197,24 @@ postcss(后处理器): vite 默认使用 postcss 处理 css, 可以配置 postcs
 什么是静态资源: 静态资源是服务器直接返回给客户端的资源, 比如图片, 音频, 视频, 文本, css, js 等等
 
 vite 对静态资源基本开箱即用
+
+
+### vite 在生产环境对静态资源的处理 dist/
+
+1. 打包后有 hash 值, 浏览器有缓存, 静态资源名字不改变, 就会缓存, 浏览器不会重新请求
+
+```js
+export default defineConfig({
+  build: {
+    outDir: 'test', // 配置输出目录
+    rollupOptions: { // 配置 rollup 的构建策略
+      output: {
+        entryFileNames: '[name].js', // 配置入口文件名
+        chunkFileNames: '[name].js', // 配置分割文件名
+        assetFileNames: '[hash].[name].[ext]' // 配置静态资源文件名
+      }
+    },
+    assetsInlineLimit: 4096000, // 配置静态资源打包大小限制, 低于 4M 的静态资源会被打包成 base64
+  },
+})
+```
