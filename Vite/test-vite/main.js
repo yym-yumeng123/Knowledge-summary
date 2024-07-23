@@ -1,5 +1,4 @@
-import { count } from "./counter.js"
-import './request.js'
-import './index.css'
-import './index.less'
-console.log(count)
+import './src/imageLoader'
+import jsonFile from './src/assets/json/index.json'
+
+console.log('jsonFile', jsonFile)

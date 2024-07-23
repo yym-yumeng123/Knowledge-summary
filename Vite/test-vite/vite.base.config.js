@@ -1,6 +1,13 @@
 import { defineConfig } from 'vite'
+import path from 'path'
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'), // 配置别名
+      '@assets': path.resolve(__dirname, './src/assets')
+    }
+  },
   css: { // 对 css 的行为进行配置
     // 配置 CSS modules 的行为。选项将被传递给 postcss-modules。
     modules: { // 配置 css 模块化, 对 css 模块化默认行为进行覆盖
