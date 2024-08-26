@@ -254,3 +254,174 @@ export default {
   }
 </script>
 ```
+
+### Vue 构造器: Vue.extend(options) 与手动挂载 $mount('#app')
+
+创建一个 Vue 实例时，都会有一个选项 el，来指定实例的根节点，如果不写 el 选项，那组件就处于未挂载状态。Vue.extend 的作用，就是基于 Vue 构造器，创建一个“子类”，它的参数跟 new Vue 的基本一样，但 data 要跟组件一样，是个函数，再配合 $mount ，就可以让组件渲染，并且挂载到任意指定的节点上，比如 body
+
+```js
+import Vue from "vue"
+
+// 创建了一个构造器
+const AlertComponent = Vue.extend({
+  template: "<div>{{ message }}</div>",
+  data() {
+    return {
+      message: "Hello, Aresn",
+    }
+  },
+})
+
+// 手动渲染组件，并把它挂载到 body
+const component = new AlertComponent().$mount()
+document.body.appendChild(component.$el)
+
+// 在 $mount 里写参数来指定挂载的节点
+new AlertComponent().$mount("#app")
+// 不用 $mount，直接在创建实例时指定 el 选项
+new AlertComponent({ el: "#app" })
+```
+
+```js
+// 直接创建 Vue 实例，并且用一个 Render 函数来渲染一个 .vue 文件
+import Vue from "vue"
+import Notification from "./notification.vue"
+
+const props = {} // 这里可以传入一些组件的 props 选项
+
+const Instance = new Vue({
+  render(h) {
+    return h(Notification, {
+      props: props,
+    })
+  },
+})
+
+const component = Instance.$mount()
+document.body.appendChild(component.$el)
+```
+
+### slot-scope
+
+```js
+<ul>
+  <li v-for="book in books" :key="book.id">
+    // 想自定义它的模板（即内容分发），就要用到 slot，但 slot 只能是固定的模板，没法自定义循环体中的一个具体的项
+    {{ book.name }}
+  </li>
+</ul>
+```
+
+```html
+<ul>
+  <li v-for="book in books" :key="book.id">
+    <!-- 传递了一个自定义的参数 book，它的值绑定的是当前循环项的数据 book，这样在父级使用时，就可以在 slot 中访问它了 -->
+    <slot :book="book">
+      <!-- 默认内容 -->
+      {{ book.name }}
+    </slot>
+  </li>
+</ul>
+
+
+<book-list :books="books">
+  <!-- slot-scope 指定的参数 slotProps 就是这个 slot 的全部参数，它是一个对象，在 slot-scope 中是可以传递多个参数的 -->
+  <template slot-scope="slotProps">
+    <span v-if="slotProps.book.sale">限时优惠</span>
+    {{ slotProps.book.name }}
+  </template>
+</book-list>
+
+```
+
+### 递归组件 动态组件
+
+递归组件就是指组件在模板中调用自己，开启递归组件的必要条件，就是在组件中设置一个 name 选项
+
+- 要给组件设置 name；
+- 要有一个明确的结束条件
+
+```html
+<template>
+  <div>
+    <my-component></my-component>
+  </div>
+</template>
+<script>
+  export default {
+    name: 'my-component'
+  }
+</script>
+
+```
+
+Vue.js 提供了另外一个内置的组件 `<component>` 和 `is` 特性，可以更好地实现动态组件
+
+```vue
+<!-- a.vue -->
+<template>
+  <div>
+    组件 A
+  </div>
+</template>
+<script>
+  export default {
+
+  }
+</script>
+```
+```vue
+<!-- b.vue -->
+<template>
+  <div>
+    组件 B
+  </div>
+</template>
+<script>
+  export default {
+
+  }
+</script>
+```
+
+```js
+<template>
+  <div>
+    <button @click="handleChange('A')">显示 A 组件</button>
+    <button @click="handleChange('B')">显示 B 组件</button>
+    <button @click="handleChange('C')">显示 C 组件</button>
+
+    <component :is="component"></component>
+  </div>
+</template>
+<script>
+  import componentA from '../components/a.vue';
+  import componentB from '../components/b.vue';
+  import componentC from '../components/c.vue';
+
+  export default {
+    data () {
+      return {
+        component: componentA
+      }
+    },
+    methods: {
+      handleChange (component) {
+        if (component === 'A') {
+          this.component = componentA;
+        } else if (component === 'B') {
+          this.component = componentB;
+        } else if (component === 'C') {
+          this.component = componentC;
+        }
+      }
+    }
+  }
+</script>
+
+```
+
+### API 详解
+
+1. `nextTick` 是 Vue.js 提供的一个函数，并非浏览器内置。nextTick 函数接收一个回调函数 cb，在下一个 DOM 更新循环之后执行
+2. `v-model` 是一个语法糖，可以拆解为 props: value 和 events: input
