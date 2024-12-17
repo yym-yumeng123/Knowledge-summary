@@ -1,0 +1,12 @@
+{
+  "name": "@monorepo/project-1",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@monorepo/project-1": "file:",
+    "@monorepo/utils": "workspace:^"
+  }
+}
