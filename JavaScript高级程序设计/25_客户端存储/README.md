@@ -56,3 +56,51 @@ document.cookie = encodeURIComponent("name") + "=" + encodeURIComponent("Nichola
 ### 使用 cookie 的注意事项
 
 还有一种叫作 HTTP-only 的 cookie。HTTP-only 可以在浏览器设置，也可以在服务器设置，但只能在服务器上读取，这是因为 JavaScript 无法取得这种 cookie 的值
+
+## Web Storage
+
+Web Storage 的第 2 版定义了两个对象：localStorage 和 sessionStorage。localStorage 是永久存储机制，sessionStorage 是跨会话的存储机制, 空间限制: 5M
+
+### storage 类型
+
+- clear(): 清空所有数据
+- getItem(key): 获取指定 key 的值
+- key(index): 获取指定索引的 key
+- removeItem(key): 删除指定 key 的值
+- setItem(key, value): 设置指定 key 的值
+
+### sessionStorage 对象
+
+sessionStorage 对象只存储会话数据, 意味数据只会存储到浏览器关闭, 存储在 sessionStorage 中的数据不受页面刷新影响，可以在浏览器崩溃并重启后恢复
+
+```js
+sessionStorage.setItem('name', '张三');
+sessionStorage.getItem('name');
+```
+
+### localStorage 对象
+
+访问同一个 localStorage 对象，页面必须来自同一个域（子域不可以）、在相同的端口上使用相同的协议。
+
+```js
+// 使用方法存储数据
+localStorage.setItem('name', '张三');
+
+// 使用属性存储数据
+localStorage.name = '张三';
+```
+
+### 存储事件
+
+每当 Storage 对象发生变化时, 会在文档触发 storage 事件, 这个事件的事件对象有如下 4 个属性
+
+- domain: 触发该事件的源域名
+- key: 被设置或者删除的键
+- newValue: 设置的值
+- oldValue: 删除的值
+
+```js
+window.addEventListener("storage", (event) =>
+  alert("Storage changed for ${event.domain}")
+)
+```
