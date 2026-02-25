@@ -128,9 +128,9 @@ fetch("/bar", {
 })
 ```
 
-4. 加载Blob文件
+4. 加载 Blob 文件
 
-一种常见的做法是明确将图片文件加载到内存，然后将其添加到 HTML图片元素。为此，可以使用响应对象上暴露的 `blob()` 方法
+一种常见的做法是明确将图片文件加载到内存，然后将其添加到 HTML 图片元素。为此，可以使用响应对象上暴露的 `blob()` 方法
 
 ```js
 const imageElement = document.querySelector("img")
@@ -177,7 +177,7 @@ setTimeout(() => abortController.abort(), 10)
 
 ### Headers 对象
 
-Headers 对象是所有外发请求和入站响应头部的容器, 每个外发的Request实例都包含一个空的 Headers 实例, 可以通过 Request.prototype.headers 属性访问, 每个入站Response 实例都包含一个空的 Headers 实例, 可以通过 Response.prototype.headers 访问
+Headers 对象是所有外发请求和入站响应头部的容器, 每个外发的 Request 实例都包含一个空的 Headers 实例, 可以通过 Request.prototype.headers 属性访问, 每个入站 Response 实例都包含一个空的 Headers 实例, 可以通过 Response.prototype.headers 访问
 
 1. Headers 与 Map 的相似之处
 
@@ -210,13 +210,13 @@ m.delete("Content-Type")
 
 2. Headers 独有的特性
 
-在初始化Headers 对象时, 也可以使用键/值对形式的对象, 而Map则不可以
+在初始化 Headers 对象时, 也可以使用键/值对形式的对象, 而 Map 则不可以
 
 ```js
 let seed = { "Content-Type": "text/plain" }
 let h = new Headers(seed)
 
-let m = new Map(seed) // TypeError: object is not iterable 
+let m = new Map(seed) // TypeError: object is not iterable
 ```
 
 一个 HTTP 头部字段有多个值, 而 Headers 对象通过 append() 支持添加多个值
@@ -243,9 +243,9 @@ let r = new Request("https://example.com/foo")
 console.log(r) // Request { … }
 ```
 
-2. 克隆Request 对象
+2. 克隆 Request 对象
 
-Fetch API 提供了两种不太一样的方式用于创建Request 对象的副本: clone() 和 new Request()
+Fetch API 提供了两种不太一样的方式用于创建 Request 对象的副本: clone() 和 new Request()
 
 ```js
 let r1 = new Request("https://example.com/foo")
@@ -262,7 +262,7 @@ let r2 = r1.clone();
 console.log(r1.url); // https://foo.com/
 console.log(r2.url); // https://foo.com/
 console.log(r1.bodyUsed); // false
-console.log(r2.bodyUsed); // false 
+console.log(r2.bodyUsed); // false
 ```
 
 3. 在 fetch() 中使用 Request 对象
@@ -272,7 +272,7 @@ let r = new Request('https://foo.com');
 // 向 foo.com 发送 GET 请求
 fetch(r);
 // 向 foo.com 发送 POST 请求
-fetch(r, { method: 'POST' }); 
+fetch(r, { method: 'POST' });
 
 ```
 
@@ -293,4 +293,171 @@ let r = new Request("https://foo.com", { method: "POST", body: "foobar" })
 fetch(r.clone())
 fetch(r.clone())
 fetch(r)
+```
+
+### Response 对象
+
+Response 对象是获取资源响应的接口。这个接口暴露了响应的相关信息
+
+1. 创建 Response 对象
+
+```js
+let r = new Response();
+console.log(r);
+
+// Response {
+//  body: (...)
+//  bodyUsed: false
+//  headers: Headers {}
+//  ok: true
+//  redirected: false
+//  status: 200
+//  statusText: "OK"
+//  type: "default"
+//  url: ""
+// }
+
+```
+
+- headers: 响应包含的 Headers 对象
+- ok: 布尔值 响应状态码是否在 200-299 范围内
+- redirected: 响应是否被重定向
+- status: 响应状态码
+- statusText: 响应状态文本
+- type: 响应类型
+- url: 响应的 URL
+
+### Request/Response/Body 混入
+
+Request 和 Response 都使用了 Fetch API 的 Body 混入，以实现两者承担有效载荷的能力
+
+Body 混入提供了 5 个方法，用于将 ReadableStream 转存到缓冲区的内存里，将缓冲区转换为某种 JavaScript 对象类型，以及通过期约来产生结果
+
+1. Body.text()
+
+Body.text()方法返回期约，解决为将缓冲区转存得到的 UTF-8 格式字符串。下面的代码展示了在 Response 对象上使用 Body.text()：
+
+```js
+fetch("https://foo.com")
+  .then((response) => response.text())
+  .then(console.log)
+// <!doctype html><html lang="en">
+// <head>
+// <meta charset="utf-8">
+// ...
+```
+
+2. Body.json()
+
+Body.json()方法返回期约，解决为将缓冲区转存得到的 JSON
+
+```js
+fetch("https://foo.com/foo.json")
+  .then((response) => response.json())
+  .then(console.log)
+// {"foo": "bar"}
+```
+
+3. Body.arrayBuffer()
+
+有时候，可能需要以原始二进制格式查看和修改主体, 可以使用 Body.arrayBuffer()将主体内容转换为 ArrayBuffer 实例
+
+```js
+fetch("https://foo.com")
+  .then((response) => response.arrayBuffer())
+  .then(console.log)
+// ArrayBuffer(...) {}
+```
+
+4. Body.formData()
+
+浏览器可以将 FormData 对象序列化/反序列化为主体
+
+```js
+fetch("https://foo.com/form-data")
+  .then((response) => response.formData())
+  .then((formData) => console.log(formData.get("foo")))
+// bar
+```
+
+5. Body.blob()
+
+有时候，可能需要以原始二进制格式使用主体，不用查看和修改
+
+```js
+fetch("https://foo.com")
+  .then((response) => response.blob())
+  .then(console.log)
+// Blob(...) {size:..., type: "..."}
+```
+
+6. 一次性流
+
+因为 Body 混入是构建在 ReadableStream 之上的，所以主体流只能使用一次。这意味着所有主体混入方法都只能调用一次，再次调用就会抛出错误
+
+```js
+fetch("https://foo.com").then((response) =>
+  response.blob().then(() => response.blob())
+)
+// TypeError: Failed to execute 'blob' on 'Response': body stream is locked
+let request = new Request("https://foo.com", { method: "POST", body: "foobar" })
+request.blob().then(() => request.blob())
+// TypeError: Failed to execute 'blob' on 'Request': body stream is locked
+```
+
+即使是在读取流的过程中，所有这些方法也会在它们被调用时给 ReadableStream 加锁，以阻止其他读取器访问：
+
+```js
+fetch("https://foo.com").then((response) => {
+  response.blob() // 第一次调用给流加锁
+  response.blob() // 第二次调用再次加锁会失败
+})
+// TypeError: Failed to execute 'blob' on 'Response': body stream is locked
+let request = new Request("https://foo.com", { method: "POST", body: "foobar" })
+request.blob() // 第一次调用给流加锁
+request.blob() // 第二次调用再次加锁会失败
+// TypeError: Failed to execute 'blob' on 'Request': body stream is locked
+```
+
+7. 使用 ReadableStream 主体
+
+正如Stream API所定义的，ReadableStream暴露了getReader()方法，用于产生`ReadableStreamDefaultReader`，这个读取器可以用于在数据到达时异步获取数据块。数据流的格式是`Uint8Array`。
+
+```js
+fetch("https://fetch.spec.whatwg.org/")
+  .then((response) => response.body)
+  .then((body) => {
+    let reader = body.getReader()
+    console.log(reader) // ReadableStreamDefaultReader {}
+    reader.read().then(console.log)
+  })
+// { value: Uint8Array{}, done: false }
+
+```
+
+在随着数据流的到来取得整个有效载荷，可以像下面这样递归调用 read()方法：
+
+```js
+fetch("https://fetch.spec.whatwg.org/")
+  .then((response) => response.body)
+  .then((body) => {
+    let reader = body.getReader()
+    function processNextChunk({ value, done }) {
+      if (done) {
+        return
+      }
+      console.log(value)
+      return reader.read().then(processNextChunk)
+    }
+    return reader.read().then(processNextChunk)
+  })
+// { value: Uint8Array{}, done: false }
+// { value: Uint8Array{}, done: false }
+// { value: Uint8Array{}, done: false }
+```
+
+双流技术 
+
+```js
+
 ```
