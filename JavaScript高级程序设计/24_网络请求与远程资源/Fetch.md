@@ -72,7 +72,7 @@ fetch("/does-not-exist").then((response) => {
 只使用 URL 时，fetch()会发送 GET 请求，只包含最低限度的请求头, 进一步配置如何发送请求，需要传入可选的第二个参数 init 对象
 
 - body: 指定请求体时请求体的内容, 必须是 Blob, BufferSource, FormData, URLSearchParams、ReadableStream 或 String 的实例
-- cache: 控制浏览器与HTTP缓存的交互
+- cache: 控制浏览器与 HTTP 缓存的交互
 - credentials: 配置请求的 Cookie
 - headers: 指定请求头
 - method: 指定请求方法
@@ -82,3 +82,95 @@ fetch("/does-not-exist").then((response) => {
 - referrer: 指定请求来源
 - referrerPolicy: 配置请求来源
 - signal: 配置取消请求的信号
+
+### 常见 Fetch 请求模式
+
+1. 发送 JSON 数据
+
+```js
+let payload = JSON.stringify({ foo: "bar" })
+let jsonHeaders = new Headers({ "Content-Type": "application/json" })
+
+fetch("/bar", {
+  method: "POST",
+  headers: jsonHeaders,
+  body: payload,
+})
+```
+
+2. 在请求体中发送参数
+
+因为请求体支持任意字符串值, 所以可以通过它发送请求参数
+
+```js
+let payload = "foo=bar&baz=qux"
+let paramHeaders = new Headers({
+  "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+})
+fetch("/bar", {
+  method: "POST",
+  headers: paramHeaders,
+  body: payload,
+})
+```
+
+3. 发送文件
+
+因为请求体支持 FormData 实现，所以 fetch()也可以序列化并发送文件字段中的文件：
+
+```js
+let imageFormData = new FormData()
+let imageInput = document.querySelector("input[type=file]")
+imageFormData.append("image", imageInput.files[0])
+fetch("/bar", {
+  method: "POST",
+  body: imageFormData,
+})
+```
+
+4. 加载Blob文件
+
+一种常见的做法是明确将图片文件加载到内存，然后将其添加到 HTML图片元素。为此，可以使用响应对象上暴露的 `blob()` 方法
+
+```js
+const imageElement = document.querySelector("img")
+fetch("my-image.png")
+  .then((response) => response.blob())
+  .then((blob) => {
+    imageElement.src = URL.createObjectURL(blob)
+  })
+```
+
+5. 发送跨域资源
+
+从不同的源请求资源，响应要包含 CORS 头部才能保证浏览器收到响应。没有这些头部，跨源请求会失败并抛出错误。
+
+```js
+fetch("//cross-origin.com")
+// TypeError: Failed to fetch
+// No 'Access-Control-Allow-Origin' header is present on the requested resource.
+```
+
+如果代码不需要访问响应，也可以发送 no-cors 请求。此时响应的 type 属性值为 opaque
+
+```js
+// 适合发送探测请求或者将响应缓存起来供以后使用
+fetch("//cross-origin.com", { method: "no-cors" }).then((response) =>
+  console.log(response.type)
+)
+// opaque
+```
+
+6. 中断请求
+
+Fetch API 允许中断请求，通过 AbortController/AbortSignal 对象实现。
+
+```js
+let abortController = new AbortController()
+fetch("wikipedia.zip", { signal: abortController.signal }).catch(() =>
+  console.log("aborted!")
+)
+// 10 毫秒后中断请求
+setTimeout(() => abortController.abort(), 10)
+// 已经中断
+```
