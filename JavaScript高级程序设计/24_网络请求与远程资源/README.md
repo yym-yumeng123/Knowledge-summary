@@ -144,3 +144,66 @@ xhr.send(null);
 ```
 
 ### 进度事件
+
+Progress Events 是 W3C 的工作草案, 定义了客户端-服务端通信, 有 6 个进度相关的 API
+
+- loadstart: 在接受到响应的第一个字节时触发
+- progress: 在接受响应期间，每隔指定的时间间隔触发一次
+- error: 在请求失败时触发
+- abort: 在调用 abort() 方法时触发
+- load: 在成功接收完响应时触发
+- loadend: 在通信完成时, 且在 load 或 error 事件之后触发
+
+每次请求都会首先触发 loadstart 事件，之后是一个或多个 progress 事件，接着是 error、abort
+或 load 中的一个，最后以 loadend 事件结束。
+
+1. load 事件
+
+只要是从服务器收到响应，无论状态码是什么，都会触发 load 事件。这意味着还需要检查 status 属性才能确定数据是否有效
+
+```js
+let xhr = new XMLHttpRequest()
+xhr.onload = function () {
+  if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+    console.log(xhr.responseText)
+  } else {
+    console.log(xhr.status)
+  }
+}
+
+xhr.open("get", "/api/users", true)
+xhr.send(null)
+```
+
+2. progress 事件
+
+在浏览器接收数据期间，这个事件会反复触发。每次触发时，onprogress 事件处理程序都会收到 event 对象，其 target 属性是 XHR 对象，且包含 3 个额外属性：lengthComputable、position 和 totalSize。
+
+- lengthComputable: 表示响应长度是否可计算，如果响应长度可计算，则值为 true，否则为 false
+- position: 表示已经接收的字节数
+- totalSize: 响应的总字节数
+
+```js
+let xhr = new XMLHttpRequest()
+xhr.onload = function () {
+  if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+    console.log(xhr.responseText)
+  } else {
+    console.log(xhr.status)
+  }
+}
+
+xhr.onprogress = function (event) {
+  let divStatus = document.getElementById("status")
+  if (event.lengthComputable) {
+    divStatus.innerHTML =
+      "Received " + event.position + " of " + event.totalSize + " bytes"
+  }
+}
+
+xhr.open("get", "/api/users", true)
+xhr.send(null)
+
+```
+
+为了保证正确执行，必须在调用 open()之前添加 onprogress 事件处理程序。在前面的例子中，每次触发 progress 事件都会更新 HTML 元素中的信息。假设响应有 Content-Length 头部，就可以利用这些信息计算出已经收到响应的百分比。
