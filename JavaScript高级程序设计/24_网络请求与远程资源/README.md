@@ -214,7 +214,7 @@ xhr.send(null)
 
 跨域资源共享(CORS, Cross-Origin Resource Sharing) 定义了浏览器与服务器如何实现跨源通信。
 
-对于简单的请求, 比如 GET 或 POST请求, 没有自定义头部, 而且请求体是 `text/plain` 类型, 这样的请求在发送时会有一个额外的头部叫 `Origin`, 这个头部包含发送请求的页面的源(协议 + 域名 + 端口) 
+对于简单的请求, 比如 GET 或 POST 请求, 没有自定义头部, 而且请求体是 `text/plain` 类型, 这样的请求在发送时会有一个额外的头部叫 `Origin`, 这个头部包含发送请求的页面的源(协议 + 域名 + 端口)
 
 ```
 Origin: http://www.example.com
@@ -230,8 +230,7 @@ Access-Control-Allow-Origin: http://www.example.com
 
 `XMLHttpRequest` 对象原生支持 CORS, 浏览器会自动处理 CORS 请求。
 
-
-跨域 XHR 对象允许访问 status 和 statusText 属性，也允许同步请求。出于安全考虑，跨域 XHR对象也施加了一些额外限制。
+跨域 XHR 对象允许访问 status 和 statusText 属性，也允许同步请求。出于安全考虑，跨域 XHR 对象也施加了一些额外限制。
 
 - 不能使用 setRequestHeader()设置自定义头部。
 - 不能发送和接收 cookie。
@@ -239,7 +238,7 @@ Access-Control-Allow-Origin: http://www.example.com
 
 1. 预检请求
 
-CORS通过一种叫 **预检请求**的服务器验证机制, 允许使用自定义头部, 除GET和POST之外的方法, 以及不同请求体内容类型, 在浏览器发送请求之前，会先发送一个 OPTIONS 请求，这个请求的请求体为空，请求头中包含以下信息：
+CORS 通过一种叫 **预检请求**的服务器验证机制, 允许使用自定义头部, 除 GET 和 POST 之外的方法, 以及不同请求体内容类型, 在浏览器发送请求之前，会先发送一个 OPTIONS 请求，这个请求的请求体为空，请求头中包含以下信息：
 
 - Origin: 与简单请求相同
 - Accesss-Control-Request-Method: 请求希望使用的方法
@@ -265,7 +264,6 @@ Access-Control-Allow-Headers: NCZ
 Access-Control-Max-Age: 1728000
 ```
 
-
 2. 凭据请求
 
 默认情况下，CORS 不提供凭据（cookie、HTTP 认证和客户端 SSL 证书）。可以通过设置`withCredentials` 属性为 true 来启用
@@ -274,4 +272,46 @@ Access-Control-Max-Age: 1728000
 Access-Control-Allow-Credentials: true
 ```
 
-### 
+### 替代性跨源技术
+
+1. 图片探测
+
+图片探测是一种替代性跨源技术，通过创建一个图片元素，将图片的 src 属性设置为请求的 URL，然后检查图片的 src 属性是否被修改。如果被修改，则表示请求成功。
+
+```js
+let img = new Image()
+// onload 和 onerror 事件处理程序添加了同一个函数
+img.onload = img.onerror = function () {
+  alert("Done!")
+}
+img.src = "http://www.example.com/test?name=Nicholas"
+```
+
+图片探测的缺点是只能发送 GET 请求和无法获取服务器响应的内容
+
+2. JSONP
+
+JSONP 是 "JSON with padding" 的简写, 是在 Web 服务上流行的一种 JSON 变体. JSONP 看起来和 JSON 一样, 只是会被包在一个函数调用里
+
+```js
+callback({ "name": "Nicholas" })
+```
+
+JSONP 格式包含两个部分: 回调和数据, 回调是在页面接收到响应之后应该调用的函数，通常回调函数的名称是通过请求来动态指定的。而数据就是作为参数传给回调函数的 JSON 数据。下面是一个典型的 JSONP 请求：
+
+`http://freegeoip.net/json/?callback=handleResponse `
+
+JSONP 调用是通过动态创建`<script>元素并为 src 属性指定跨域 URL 实现的。此时的<script>`
+与`<img>`元素类似，能够不受限制地从其他域加载资源。因为 JSONP 是有效的 JavaScript，所以 JSONP
+响应在被加载完成之后会立即执行。比如下面这个例子：
+
+```js
+function handleResponse(response) {
+  console.log(`
+  You're at IP address ${response.ip}, which is in
+  ${response.city}, ${response.region_name}`)
+}
+let script = document.createElement("script")
+script.src = "http://freegeoip.net/json/?callback=handleResponse"
+document.body.insertBefore(script, document.body.firstChild)
+```
