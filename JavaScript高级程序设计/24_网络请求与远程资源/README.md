@@ -179,7 +179,7 @@ xhr.send(null)
 
 在浏览器接收数据期间，这个事件会反复触发。每次触发时，onprogress 事件处理程序都会收到 event 对象，其 target 属性是 XHR 对象，且包含 3 个额外属性：lengthComputable、position 和 totalSize。
 
-- lengthComputable: 表示响应长度是否可计算，如果响应长度可计算，则值为 true，否则为 false
+- lengthComputable: 一个布尔值，表示进度信息是否可用
 - position: 表示已经接收的字节数
 - totalSize: 响应的总字节数
 
@@ -207,3 +207,71 @@ xhr.send(null)
 ```
 
 为了保证正确执行，必须在调用 open()之前添加 onprogress 事件处理程序。在前面的例子中，每次触发 progress 事件都会更新 HTML 元素中的信息。假设响应有 Content-Length 头部，就可以利用这些信息计算出已经收到响应的百分比。
+
+### 跨域资源共享
+
+通过 XHR 进行 Ajax 通信的一个主要限制是跨源安全策略, 默认情况下，XHR 只能访问与发起请求的页面在同一个域内的资源。这个安全限制可以防止某些恶意行为
+
+跨域资源共享(CORS, Cross-Origin Resource Sharing) 定义了浏览器与服务器如何实现跨源通信。
+
+对于简单的请求, 比如 GET 或 POST请求, 没有自定义头部, 而且请求体是 `text/plain` 类型, 这样的请求在发送时会有一个额外的头部叫 `Origin`, 这个头部包含发送请求的页面的源(协议 + 域名 + 端口) 
+
+```
+Origin: http://www.example.com
+```
+
+如果服务器决定响应请求, 那么应该发送一个额外的头部 `Access-Control-Allow-Origin`
+
+```
+Access-Control-Allow-Origin: http://www.example.com
+```
+
+如果没有这个它不, 或者有源不匹配, 表明服务器拒绝接受这个请求
+
+`XMLHttpRequest` 对象原生支持 CORS, 浏览器会自动处理 CORS 请求。
+
+
+跨域 XHR 对象允许访问 status 和 statusText 属性，也允许同步请求。出于安全考虑，跨域 XHR对象也施加了一些额外限制。
+
+- 不能使用 setRequestHeader()设置自定义头部。
+- 不能发送和接收 cookie。
+- getAllResponseHeaders()方法始终返回空字符串
+
+1. 预检请求
+
+CORS通过一种叫 **预检请求**的服务器验证机制, 允许使用自定义头部, 除GET和POST之外的方法, 以及不同请求体内容类型, 在浏览器发送请求之前，会先发送一个 OPTIONS 请求，这个请求的请求体为空，请求头中包含以下信息：
+
+- Origin: 与简单请求相同
+- Accesss-Control-Request-Method: 请求希望使用的方法
+- Access-Control-Request-Headers: (可选)请求希望使用的头部
+
+```http
+Origin: http://www.nczonline.net
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: NCZ
+```
+
+服务器收到这个请求后，会检查是否允许这个请求，如果允许，会返回一个包含以下头部的响应：
+
+- Access-Control-Allow-Origin: 与简单请求相同
+- Access-Control-Allow-Methods: 允许的请求方法
+- Access-Control-Allow-Headers: 允许的请求头部
+- Access-Control-Max-Age: 预检请求的缓存时间
+
+```http
+Access-Control-Allow-Origin: http://www.nczonline.net
+Access-Control-Allow-Methods: POST, GET
+Access-Control-Allow-Headers: NCZ
+Access-Control-Max-Age: 1728000
+```
+
+
+2. 凭据请求
+
+默认情况下，CORS 不提供凭据（cookie、HTTP 认证和客户端 SSL 证书）。可以通过设置`withCredentials` 属性为 true 来启用
+
+```http
+Access-Control-Allow-Credentials: true
+```
+
+### 

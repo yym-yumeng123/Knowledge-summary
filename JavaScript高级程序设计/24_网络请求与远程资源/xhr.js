@@ -17,3 +17,4 @@ xhr.onprogress = function (event) {
 
 xhr.open("get", "/api/users", true)
 xhr.send(null)
+
