@@ -459,5 +459,32 @@ fetch("https://fetch.spec.whatwg.org/")
 双流技术 
 
 ```js
+fetch("https://fetch.spec.whatwg.org/")
+  .then((response) => response.body)
+  .then((body) => {
+    const reader = body.getReader()
+    // 创建第二个流
+    return new ReadableStream({
+      async start(controller) {
+        try {
+          while (true) {
+            const { value, done } = await reader.read()
+            if (done) {
+              break
+            }
+            // 将主体流的块推到第二个流
+            controller.enqueue(value)
+          }
+        } finally {
+          controller.close()
+          reader.releaseLock()
+        }
+      },
+    })
+  })
+  .then((secondaryStream) => new Response(secondaryStream))
+  .then((response) => response.text())
+  .then(console.log)
+// <!doctype html><html lang="en"><head><meta charset="utf-8"> ...
 
 ```
