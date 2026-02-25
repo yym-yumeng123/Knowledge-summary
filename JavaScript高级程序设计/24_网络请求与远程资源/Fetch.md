@@ -174,3 +174,60 @@ fetch("wikipedia.zip", { signal: abortController.signal }).catch(() =>
 setTimeout(() => abortController.abort(), 10)
 // 已经中断
 ```
+
+### Headers 对象
+
+Headers 对象是所有外发请求和入站响应头部的容器, 每个外发的Request实例都包含一个空的 Headers 实例, 可以通过 Request.prototype.headers 属性访问, 每个入站Response 实例都包含一个空的 Headers 实例, 可以通过 Response.prototype.headers 访问
+
+1. Headers 与 Map 的相似之处
+
+HTTP 头部本质上是序列化后的键值对, 键是 HTTP 头部名称, 值是 HTTP 头部值
+
+```js
+let h = new Headers()
+let m = new Map()
+
+// 设置键
+h.set("Content-Type", "text/plain")
+m.set("Content-Type", "text/plain")
+
+// 检查键
+console.log(h.has("Content-Type"))
+console.log(m.has("Content-Type"))
+
+// 更新键
+h.set("Content-Type", "application/json")
+m.set("Content-Type", "application/json")
+
+// 获取更新的值
+console.log(h.get("Content-Type"))
+console.log(m.get("Content-Type"))
+
+// 删除键
+h.delete("Content-Type")
+m.delete("Content-Type")
+```
+
+2. Headers 独有的特性
+
+在初始化Headers 对象时, 也可以使用键/值对形式的对象, 而Map则不可以
+
+```js
+let seed = { "Content-Type": "text/plain" }
+let h = new Headers(seed)
+
+let m = new Map(seed) // TypeError: object is not iterable 
+```
+
+一个 HTTP 头部字段有多个值, 而 Headers 对象通过 append() 支持添加多个值
+
+```js
+let h = new Headers()
+h.append("Set-Cookie", "foo=bar")
+h.append("Set-Cookie", "baz=qux")
+console.log(h.get("Set-Cookie"))
+```
+
+3. 头部护卫
+
+某些情况下，并非所有 HTTP 头部都可以被客户端修改，而 Headers 对象使用护卫来防止不被允许的修改。
