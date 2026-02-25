@@ -488,3 +488,325 @@ fetch("https://fetch.spec.whatwg.org/")
 // <!doctype html><html lang="en"><head><meta charset="utf-8"> ...
 
 ```
+
+### 流式处理 SSE (Server-Sent Events)
+
+SSE (Server-Sent Events) 是一种服务器推送技术，允许服务器向客户端持续发送事件流。与传统的请求-响应模式不同，SSE 是**单向、持续的数据流**。
+
+#### 为什么需要流式处理？
+
+传统方式需要等待完整响应：
+```js
+// 传统方式：必须等服务器全部处理完才能看到结果
+fetch('/api/chat')
+  .then(res => res.json())
+  .then(data => {
+    // 一次性显示全部内容，用户等待时间长
+    console.log(data.message)
+  })
+```
+
+流式处理边收边显示：
+```js
+// 流式方式：数据来一块处理一块
+fetch('/api/chat')
+  .then(res => {
+    const reader = res.body.getReader()
+    // 每收到一个 chunk 就立即处理
+  })
+```
+
+#### SSE 数据格式
+
+SSE 响应有特定的文本格式：
+
+```
+data: 第一块数据
+
+data: 第二块数据
+
+data: {"type": "message", "content": "你好"}
+
+event: customEvent
+data: 自定义事件数据
+
+```
+
+**关键点**：
+- 每条消息以 `data:` 开头
+- 消息之间用**两个换行符**分隔
+- 可选 `event:` 字段指定事件类型
+- 可选 `id:` 字段指定事件 ID
+
+#### 使用 Fetch + ReadableStream 处理 SSE
+
+下面是一个完整的 SSE 流式处理示例：
+
+```js
+async function streamSSE(url) {
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+
+      if (done) {
+        console.log('流传输完成')
+        break
+      }
+
+      // 解码二进制数据
+      const chunk = decoder.decode(value, { stream: true })
+
+      // 将新数据追加到缓冲区
+      buffer += chunk
+
+      // 处理完整的 SSE 消息（按双换行符分割）
+      const messages = buffer.split('\n\n')
+
+      // 保留最后一个可能不完整的消息
+      buffer = messages.pop() || ''
+
+      // 处理每条完整的消息
+      for (const message of messages) {
+        if (!message.trim()) continue
+
+        // 解析 SSE 消息
+        const parsed = parseSSEMessage(message)
+
+        // 处理不同类型的事件
+        if (parsed.event === 'message' || !parsed.event) {
+          console.log('收到消息:', parsed.data)
+          // 可以在这里更新 UI
+          appendToUI(parsed.data)
+        } else if (parsed.event === 'error') {
+          console.error('服务器错误:', parsed.data)
+        } else if (parsed.event === 'done') {
+          console.log('服务器完成发送')
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock()
+  }
+}
+
+// 解析单条 SSE 消息
+function parseSSEMessage(message) {
+  const lines = message.split('\n')
+  let event = 'message'
+  let data = ''
+  let id = null
+
+  for (const line of lines) {
+    if (line.startsWith('event:')) {
+      event = line.slice(6).trim()
+    } else if (line.startsWith('data:')) {
+      data += line.slice(5).trim()
+    } else if (line.startsWith('id:')) {
+      id = line.slice(3).trim()
+    }
+  }
+
+  // 尝试解析 JSON
+  try {
+    data = JSON.parse(data)
+  } catch {
+    // 保持原样
+  }
+
+  return { event, data, id }
+}
+
+// 示例：将消息追加到 UI
+function appendToUI(data) {
+  const container = document.getElementById('messages')
+  const div = document.createElement('div')
+  div.textContent = typeof data === 'string' ? data : data.content
+  container.appendChild(div)
+}
+
+// 使用示例
+streamSSE('/api/events')
+```
+
+#### 实际应用：ChatGPT 风格的流式输出
+
+```js
+class StreamingChat {
+  constructor(url) {
+    this.url = url
+    this.container = document.getElementById('chat-messages')
+    this.currentMessage = null
+  }
+
+  async sendMessage(message) {
+    // 显示用户消息
+    this.appendMessage('user', message)
+
+    // 创建空的助手消息容器
+    this.currentMessage = this.appendMessage('assistant', '')
+
+    try {
+      const response = await fetch(this.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+
+      while (true) {
+        const { done, value } = await reader.read()
+
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+
+        // SSE 格式：data: {...}
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.slice(6)
+
+            // 跳过 [DONE] 标记
+            if (jsonStr === '[DONE]') continue
+
+            try {
+              const data = JSON.parse(jsonStr)
+
+              // 逐字追加内容
+              if (data.content) {
+                this.currentMessage.textContent += data.content
+                // 自动滚动到底部
+                this.scrollToBottom()
+              }
+            } catch (e) {
+              console.error('解析失败:', e)
+            }
+          }
+        }
+      }
+    } catch (error) {
+      this.currentMessage.textContent = '出错啦: ' + error.message
+    }
+  }
+
+  appendMessage(role, content) {
+    const div = document.createElement('div')
+    div.className = `message ${role}`
+    div.textContent = content
+    this.container.appendChild(div)
+    this.scrollToBottom()
+    return div
+  }
+
+  scrollToBottom() {
+    this.container.scrollTop = this.container.scrollHeight
+  }
+}
+
+// 使用
+const chat = new StreamingChat('/api/chat/stream')
+chat.sendMessage('你好，介绍一下 SSE')
+```
+
+#### 支持断线重连的 SSE 处理
+
+```js
+async function resilientSSE(url, options = {}) {
+  const {
+    maxRetries = 3,
+    retryDelay = 1000,
+    onMessage = console.log,
+    onError = console.error
+  } = options
+
+  let retryCount = 0
+  let lastEventId = null
+
+  while (retryCount <= maxRetries) {
+    try {
+      const headers = {}
+      if (lastEventId) {
+        headers['Last-Event-ID'] = lastEventId
+      }
+
+      const response = await fetch(url, { headers })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      // 重置重试计数（连接成功）
+      retryCount = 0
+
+      while (true) {
+        const { done, value } = await reader.read()
+
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const messages = buffer.split('\n\n')
+        buffer = messages.pop() || ''
+
+        for (const msg of messages) {
+          const parsed = parseSSEMessage(msg)
+          if (parsed.id) lastEventId = parsed.id
+          onMessage(parsed)
+        }
+      }
+
+      reader.releaseLock()
+      break // 正常结束
+
+    } catch (error) {
+      retryCount++
+      onError(error, retryCount)
+
+      if (retryCount > maxRetries) {
+        throw new Error(`超过最大重试次数: ${maxRetries}`)
+      }
+
+      // 等待后重连
+      await new Promise(resolve => setTimeout(resolve, retryDelay * retryCount))
+    }
+  }
+}
+```
+
+#### SSE vs WebSocket 对比
+
+| 特性 | SSE | WebSocket |
+|------|-----|-----------|
+| 方向 | 服务器 → 客户端（单向） | 双向通信 |
+| 协议 | HTTP | HTTP + WebSocket 升级 |
+| 自动重连 | 浏览器自动支持 | 需手动实现 |
+| 数据格式 | 文本（UTF-8） | 文本或二进制 |
+| 浏览器支持 | 现代浏览器 | 现代浏览器 |
+| 使用场景 | 消息推送、股票行情 | 聊天、游戏 |
+
+**选择 SSE 当**：
+- 只需要服务器推送数据
+- 希望利用浏览器自动重连
+- 数据格式简单（文本为主）
+- 传统 HTTP 基础设施
+
+**选择 WebSocket 当**：
+- 需要双向通信
+- 需要二进制数据传输
+- 需要低延迟的实时交互
