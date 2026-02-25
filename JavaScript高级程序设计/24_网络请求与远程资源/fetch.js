@@ -86,3 +86,14 @@ fetch("wikipedia.zip", { signal: abortController.signal }).catch(() =>
 // 10 毫秒后中断请求
 setTimeout(() => abortController.abort(), 10)
 // 已经中断
+
+let r = new Request("https://foo.com", { method: "POST", body: "foobar" })
+r.text()
+fetch(r)
+// TypeError: Cannot construct a Request with a Request object that has already been used.
+
+let r1 = new Request("https://foo.com", { method: "POST", body: "foobar" })
+// 3 个都会成功
+fetch(r.clone())
+fetch(r.clone())
+fetch(r)

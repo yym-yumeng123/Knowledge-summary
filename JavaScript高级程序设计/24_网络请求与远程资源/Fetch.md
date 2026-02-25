@@ -231,3 +231,66 @@ console.log(h.get("Set-Cookie"))
 3. 头部护卫
 
 某些情况下，并非所有 HTTP 头部都可以被客户端修改，而 Headers 对象使用护卫来防止不被允许的修改。
+
+### Request 对象
+
+顾名思义，Request 对象是获取资源请求的接口。这个接口暴露了请求的相关信息，也暴露了使用请求体的不同方式。
+
+1. 创建 Request 对象
+
+```js
+let r = new Request("https://example.com/foo")
+console.log(r) // Request { … }
+```
+
+2. 克隆Request 对象
+
+Fetch API 提供了两种不太一样的方式用于创建Request 对象的副本: clone() 和 new Request()
+
+```js
+let r1 = new Request("https://example.com/foo")
+let r2 = new Request(r1)
+
+// 如果传入 init 对象, 会覆盖源对象中同名的值
+let r3 = new Request(r1, { method: "POST" })
+console.log(r1.method, r2.method, r3.method) // GET GET POST
+
+
+// clone() 会创建一个 Request 对象的副本, 任何值都不会被覆盖
+let r1 = new Request('https://foo.com', { method: 'POST', body: 'foobar' });
+let r2 = r1.clone();
+console.log(r1.url); // https://foo.com/
+console.log(r2.url); // https://foo.com/
+console.log(r1.bodyUsed); // false
+console.log(r2.bodyUsed); // false 
+```
+
+3. 在 fetch() 中使用 Request 对象
+
+```js
+let r = new Request('https://foo.com');
+// 向 foo.com 发送 GET 请求
+fetch(r);
+// 向 foo.com 发送 POST 请求
+fetch(r, { method: 'POST' }); 
+
+```
+
+fetch()会在内部克隆传入的 Request 对象, 与克隆 Request 一样，fetch()也不能拿请求体已经用过的 Request 对象来发送请求
+
+```js
+let r = new Request("https://foo.com", { method: "POST", body: "foobar" })
+r.text()
+fetch(r)
+// TypeError: Cannot construct a Request with a Request object that has already been used.
+```
+
+要想基于包含请求体的相同 Request 对象多次调用 fetch()，必须在第一次发送 fetch()请求前调用 clone()：
+
+```js
+let r = new Request("https://foo.com", { method: "POST", body: "foobar" })
+// 3 个都会成功
+fetch(r.clone())
+fetch(r.clone())
+fetch(r)
+```
