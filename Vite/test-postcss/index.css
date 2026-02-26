@@ -1,7 +1,0 @@
-:root {
-  --globalColor: lightskyblue;
-}
-
-div {
-  color: var(--globalColor);
-}
