@@ -810,3 +810,89 @@ async function resilientSSE(url, options = {}) {
 - 需要双向通信
 - 需要二进制数据传输
 - 需要低延迟的实时交互
+
+
+### Web Socket
+
+Web Socket(套接字) 的目标是通过一个长时连接实现与全双工, 双向的通信。在 JS中创建 Web Socket 时, 一个 HTTP请求会发送到服务器以初始化连接, 服务器响应后, 连接使用 HTTP 的 Upgrade 头部从 HTTP协议转换为 WebSocket协议。
+
+因为 Web Socket 使用了自定义协议. 所以URL方案(schene) 稍有变化: 不能再使用http:// 或 https://, 而是使用 ws:// 或 wss://. 前者是不安全连接, 后者用于安全链接。
+
+使用自定义协议而非 HTTP 协议的好处是，客户端与服务器之间可以发送非常少的数据，不会对HTTP 造成任何负担。使用更小的数据包让 Web Socket 非常适合带宽和延迟问题比较明显的移动应用。使用自定义议的缺点是，定义协议的时间比定义 JavaScript API 要长。Web Socket 得到了所有主流浏览器支持。
+
+1. API
+
+```js
+// 必须给 WebSocket 构造函数传入一个绝对 URL
+// 同源策略不适用于 Web Socket，因此可以打开到任意站点的连接。至于是否与来自特定源的页面通信，则完全取决于服务器
+let socket = new WebSocker("ws://echo.websocket.org")
+```
+
+浏览器会在初始化 WebSocket 对象之后立即创建连接。与 XHR 类似，WebSocket 也有一个readyState 属性表示当前状态。不过，这个值与 XHR 中相应的值不一样。
+
+- WebSocket.OPENING (0) - 连接正在建立
+- WebSocket.OPEN (1) - 连接已经建立，可以进行通信
+- WebSocket.CLOSING (2) - 连接正在关闭
+- WebSocket.CLOSE (3) - 连接已经关闭
+
+任何时候都可以调用 close()方法关闭 Web Socket 连接：
+`socket.close()`
+调用 close()之后，readyState 立即变为 2（连接正在关闭），并会在关闭后变为 3（连接已经关闭）。
+
+
+2. 发送和接受数据
+
+WebSocket 对象有 send()方法，用于发送数据。这个方法接受一个字符串作为参数，并把它发送给服务器。
+
+```js
+let  socket = new WebSocket("ws://echo.websocket.org")
+let stringData = "hello world"
+let arrayBufferData = Unit8Array.from([1, 2, 3, 4, 5])
+let blobData = new Blob(["hello world"])
+
+// 服务器向客户端发送消息时，WebSocket 对象上会触发 message 事件
+socket.send(stringData)
+socket.send(arrayBufferData)
+
+socket.onmessage = function(event) {
+  let data = event.data
+  // 对接收到的数据进行处理
+}
+```
+
+
+3. 其它事件
+
+- open - 连接成功时触发
+- error - 连接错误时触发
+- close - 连接关闭时触发
+
+
+```js
+let socket = new WebSocket("ws://www.example.com/server.php")
+socket.onopen = function () {
+  alert("Connection established.")
+}
+socket.onerror = function () {
+  alert("Connection error.")
+}
+socket.onclose = function () {
+  alert("Connection closed.")
+}
+
+socket.onclose = function (event) {
+  console.log(
+    `as clean? ${event.wasClean} Code=${event.code} Reason=${event.reason}`
+  )
+```
+
+
+### 总结
+
+Ajax 是无需刷新当前页面既可以从服务器获取数据的一个方法, 具有一下特点:
+
+- 让 Ajax 迅速流行的中心对象是 XMLHttpRequest 对象。
+- 这个对象最早由微软发明, 并在IE5中作为通过 JS 从服务器获取XML数据的一种手段
+- XHR 的一个主要限制是同源策略, 即通信只能在相同域名, 相同端口和相同协议的前提下完成
+- Fetch API 是作为 XHR对象的一种端到端的替代品，这个API提供了基于期约的结构, 更直观的接口以及对 Stream API 的最好支持
+- Web Socket 是与服务器的全双工、双向通信渠道。与其他方案不同，Web Socket 不使用 HTTP，而使用了自定义协议，目的是更快地发送小数据块。这需要专用的服务器，但速度优势明显

@@ -212,3 +212,9 @@ fetch("https://fetch.spec.whatwg.org/")
   .then((response) => response.text())
   .then(console.log)
 // <!doctype html><html lang="en"><head><meta charset="utf-8"> ...
+
+socket.onclose = function (event) {
+  console.log(
+    `as clean? ${event.wasClean} Code=${event.code} Reason=${event.reason}`
+  )
+}
