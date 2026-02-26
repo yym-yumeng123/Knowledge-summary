@@ -1,4 +1,4 @@
-(function () {
+;(function () {
   let data = "moduleB"
   function method() {
     console.log(data + "execute")
@@ -7,3 +7,5 @@
     method: method,
   }
 })()
+
+
